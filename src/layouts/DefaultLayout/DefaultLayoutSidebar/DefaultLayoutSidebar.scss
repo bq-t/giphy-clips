@@ -1,0 +1,15 @@
+.default-layout-sidebar {
+  @apply flex flex-col bg-black w-[300px];
+
+  &__logotype {
+    @apply flex justify-center py-5;
+  }
+
+  &__list {
+
+  }
+
+  &__footer {
+    @apply text-white font-extralight font-jost text-base text-center py-5 mt-auto;
+  }
+}

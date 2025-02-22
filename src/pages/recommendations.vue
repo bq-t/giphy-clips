@@ -1,9 +1,6 @@
 <template>
   <div>
-    <gc-button>
-      123123
-    </gc-button>
-    Trends page
+    Recommendations page
   </div>
 </template>
 
