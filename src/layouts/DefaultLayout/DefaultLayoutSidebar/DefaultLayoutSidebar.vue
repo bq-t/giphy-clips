@@ -2,7 +2,7 @@
   <aside class="default-layout-sidebar">
     <router-link
       class="default-layout-sidebar__logotype"
-      :to="{ name: 'recommendations' }"
+      :to="{ name: 'index' }"
     >
       <app-logotype />
     </router-link>
@@ -33,8 +33,13 @@ const sidebarItems = <SidebarItem[]>[
   {
     title: 'Recommendations',
     icon: 'local-fire-department-outline',
-    to: { name: 'recommendations' },
+    to: { name: 'index' },
   },
+  {
+    title: 'Browser',
+    icon: 'explore-outline',
+    to: { name: 'browser' },
+  }
 ]
 </script>
 
