@@ -1,15 +1,19 @@
 .default-layout-sidebar {
-  @apply flex flex-col bg-black w-[300px];
+  // Basic
+  @apply flex flex-col bg-black transition-all;
+
+  @apply w-16;
+  @apply lg:w-[300px];
 
   &__logotype {
     @apply flex justify-center py-5;
   }
 
-  &__list {
-
-  }
-
   &__footer {
-    @apply text-white font-extralight font-jost text-base text-center py-5 mt-auto;
+    // Basic
+    @apply text-white font-extralight font-jost text-center py-5 mt-auto;
+
+    @apply text-xs;
+    @apply lg:text-base;
   }
 }

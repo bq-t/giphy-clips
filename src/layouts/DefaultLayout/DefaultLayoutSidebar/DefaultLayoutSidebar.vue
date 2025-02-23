@@ -4,14 +4,14 @@
       class="default-layout-sidebar__logotype"
       :to="{ name: 'index' }"
     >
-      <app-logotype />
+      <app-logotype :collapsed="isTablet" />
     </router-link>
     <gc-list
       class="default-layout-sidebar__list"
       :items="sidebarItems"
     />
     <div class="default-layout-sidebar__footer">
-      GIPHY & bq-t.
+      GIPHY & bq&ndash;t.
     </div>
   </aside>
 </template>
@@ -27,7 +27,10 @@ interface SidebarItem {
 </script>
 
 <script lang="ts" setup>
+import { useDevice } from '@/composables'
 import AppLogotype from '@/components/AppLogotype.vue'
+
+const { isTablet } = useDevice()
 
 const sidebarItems = <SidebarItem[]>[
   {
