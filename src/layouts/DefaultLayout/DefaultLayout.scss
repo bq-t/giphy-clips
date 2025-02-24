@@ -1,3 +1,7 @@
 .default-layout {
-  @apply flex text-white bg-black min-h-screen;
+  // Basic
+  @apply flex text-white bg-black;
+
+  @apply h-[calc(100%-6rem)];
+  @apply sm:h-full;
 }

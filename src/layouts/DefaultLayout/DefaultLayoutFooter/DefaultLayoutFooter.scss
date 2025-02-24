@@ -1,0 +1,7 @@
+.default-layout-footer {
+  @apply flex items-center justify-between bg-black p-5;
+
+  &__logotype {
+    @apply mr-2.5;
+  }
+}

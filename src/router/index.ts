@@ -1,9 +1,17 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
-const routeGroups = import.meta.glob('./routes/*.ts', { eager: true })
-const availableRoutes = []
+type RouteGroup = {
+  default: RouteRecordRaw[],
+}
+
+const availableRoutes: RouteRecordRaw[] = []
+const routeGroups: Record<string, RouteGroup> = import.meta.glob('./routes/*.ts', {
+  eager: true,
+})
+
 for (const path in routeGroups) {
-  availableRoutes.push(...routeGroups[path]?.default || {})
+  const routes = routeGroups[path]?.default || []
+  availableRoutes.push(...routes)
 }
 
 const router = createRouter({
