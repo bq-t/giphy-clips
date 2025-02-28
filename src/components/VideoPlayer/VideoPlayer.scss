@@ -1,0 +1,26 @@
+.video-player {
+  @apply relative h-full w-full overflow-hidden cursor-pointer;
+  @apply sm:aspect-[9/16] sm:w-max;
+
+  &-header {
+    @apply absolute top-0 z-10;
+  }
+
+  &-source {
+    @apply relative mx-auto;
+    @apply sm:m-0;
+  }
+
+  &-actions {
+    @apply absolute top-[calc(50%-3.125rem)] right-4 z-10;
+  }
+
+  &-footer {
+    @apply absolute bottom-0 z-10;
+  }
+
+  // Modifiers
+  &_rounded {
+    @apply rounded-[1.25rem];
+  }
+}

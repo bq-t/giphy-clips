@@ -1,0 +1,7 @@
+.video-player-footer {
+  @apply w-full;
+
+  &__title {
+    @apply font-jost font-medium ml-2.5 mb-2.5;
+  }
+}

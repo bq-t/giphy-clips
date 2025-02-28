@@ -1,9 +1,9 @@
 .default-layout-sidebar {
   // Basic
-  @apply flex flex-col bg-black transition-all;
+  @apply flex flex-col bg-black transition-all shrink-0;
 
   @apply w-16;
-  @apply lg:w-[300px];
+  @apply lg:w-72;
 
   &__logotype {
     @apply flex justify-center py-5;
