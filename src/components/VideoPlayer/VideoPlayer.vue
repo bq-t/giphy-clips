@@ -35,6 +35,7 @@ import VideoPlayerSource from './VideoPlayerSource/VideoPlayerSource.vue'
 import VideoPlayerActions from './VideoPlayerActions/VideoPlayerActions.vue'
 import VideoPlayerFooter from './VideoPlayerFooter/VideoPlayerFooter.vue'
 import { computed, ref } from 'vue'
+import { useVideoPlayerStore } from '@/stores/videoPlayer'
 import { useDevice } from '@/composables'
 
 const props = withDefaults(defineProps<VideoPlayerProps>(), {
@@ -44,8 +45,13 @@ const props = withDefaults(defineProps<VideoPlayerProps>(), {
 const { isMobile } = useDevice()
 const headerVisible = ref(false)
 
+const videoPlayerStore = useVideoPlayerStore()
+const videoVolume = computed({
+  get: () => videoPlayerStore.volume,
+  set: value => videoPlayerStore.setVolume(value),
+})
+
 const videoSource = ref(null)
-const videoVolume = ref(15)
 const computedProgress = computed(() => {
   if (!videoSource.value) {
     return 0
