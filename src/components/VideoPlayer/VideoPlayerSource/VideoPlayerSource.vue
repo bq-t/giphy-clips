@@ -15,6 +15,8 @@
 <script lang="ts">
 interface VideoPlayerSourceProps {
   source: string,
+  muted?: boolean,
+  paused?: boolean,
   volume?: number,
 }
 </script>
@@ -23,10 +25,12 @@ interface VideoPlayerSourceProps {
 import { computed, ref, onBeforeUnmount, onMounted, watch } from 'vue'
 
 const props = withDefaults(defineProps<VideoPlayerSourceProps>(), {
+  muted: false,
+  paused: false,
   volume: 15,
 })
 
-const videoRef = ref(null)
+const videoRef = ref()
 const videoDuration = ref(1)
 const videoTimestamp = ref(0)
 const videoVolume = ref(props.volume)
@@ -47,8 +51,9 @@ onBeforeUnmount(() => {
 })
 
 watch(() => props.volume, updateVolume)
+watch(() => props.paused, (val) => val ? pauseVideo() : playVideo())
 
-const isMuted = computed(() => props.volume <= 0)
+const isMuted = computed(() => props.volume <= 0 || props.muted)
 
 function updateVolume(value: number) {
   if (!videoRef.value) {

@@ -11,6 +11,8 @@
     <video-player-source
       ref="videoSource"
       :source="src"
+      :paused="paused"
+      :muted="muted"
       :volume="videoVolume"
     />
     <video-player-actions />
@@ -23,8 +25,10 @@
 
 <script lang="ts">
 interface VideoPlayerProps {
-  title?: string,
-  src?: string,
+  title: string,
+  src: string,
+  muted?: boolean,
+  paused?: boolean,
   rounded?: boolean,
 }
 </script>
@@ -39,6 +43,8 @@ import { useVideoPlayerStore } from '@/stores/videoPlayer'
 import { useDevice } from '@/composables'
 
 const props = withDefaults(defineProps<VideoPlayerProps>(), {
+  muted: false,
+  paused: false,
   rounded: false,
 })
 
@@ -51,7 +57,7 @@ const videoVolume = computed({
   set: value => videoPlayerStore.setVolume(value),
 })
 
-const videoSource = ref(null)
+const videoSource = ref()
 const computedProgress = computed(() => {
   if (!videoSource.value) {
     return 0

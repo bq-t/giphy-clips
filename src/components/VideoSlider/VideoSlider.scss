@@ -1,0 +1,17 @@
+.video-slider {
+  @apply h-full overflow-y-auto overflow-x-hidden snap-mandatory snap-y;
+  @apply sm:space-y-2.5;
+
+  // Hide scrollbar
+  &::-webkit-scrollbar {
+    @apply hidden w-0;
+  }
+
+  &__item {
+    // Basic
+    @apply snap-center h-full;
+
+    @apply w-screen;
+    @apply sm:w-max;
+  }
+}
