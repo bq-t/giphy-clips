@@ -15,7 +15,7 @@ for (const path in routeGroups) {
 }
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: availableRoutes,
 })
 
