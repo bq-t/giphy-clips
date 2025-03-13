@@ -6,6 +6,7 @@ import svgLoader from 'vite-svg-loader'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: process.env.NODE_ENV === 'production' ? '/giphy-clips/' : '/',
   plugins: [
     vue(),
     svgLoader(),
