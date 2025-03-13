@@ -1,5 +1,7 @@
 <template>
-  <default-layout />
+  <suspense>
+    <default-layout />
+  </suspense>
 </template>
 
 <script setup lang="ts">

@@ -3,7 +3,8 @@
     <video-slider
       v-model="currentVideo"
       class="recommendations-page__slider"
-      :items="videosArray"
+      :items="recommendations"
+      @update:model-value="onSlide"
     />
     <div
       v-if="!isMobile"
@@ -25,16 +26,12 @@
 
 <script setup lang="ts">
 import VideoSlider from '@/components/VideoSlider/VideoSlider.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useDevice } from '@/composables'
+import { useClipsStore } from '@/stores/clips'
 
 const currentVideo = ref(0)
-const videosArray = [
-  'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWd0ZGhqb3F6cmxzMTlrcXhxZjQxNWE1bHB6dzNhaHRyeWZueWE4YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9dg/TkpA7ELrXTnueydAqv/giphy1080p.mp4',
-  'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2d5cTY5MGV0em9lbG1jaDJjMGxjdGllNTRoejRrMTVzaXAyY2FvbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9dg/GbQxQ7QSeL71NtXAs1/giphy1080p.mp4',
-  'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExem1xaGlxZGlkM3c5cWY4cnducmx2MGY5aXFrOXJnajlxNm90NDExeiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9dg/2JncG7P8IXTGKm7FRt/giphy480p.mp4',
-]
-
 function slideUp() {
   if (currentVideo.value === 0) {
     return
@@ -42,13 +39,33 @@ function slideUp() {
   currentVideo.value--
 }
 function slideDown() {
-  if (currentVideo.value === videosArray.length - 1) {
+  if (currentVideo.value === recommendations.length - 1) {
     return
   }
   currentVideo.value++
 }
 
 const { isMobile } = useDevice()
+
+const { recommendations, getRecommendations } = useClipsStore()
+
+const recommendationsPending = ref(false)
+onMounted(() => {
+  if (recommendations.length) {
+    return
+  }
+  getRecommendations()
+    .then(() => recommendationsPending.value = false)
+})
+
+function onSlide(value: number) {
+  if (value < recommendations.length - 1) {
+    return
+  }
+  recommendationsPending.value = true
+  getRecommendations(recommendations.length)
+    .then(() => recommendationsPending.value = false)
+}
 </script>
 
 <style lang="scss">

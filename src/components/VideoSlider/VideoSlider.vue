@@ -11,21 +11,24 @@
       class="video-slider__item"
     >
       <video-player
-        title="UserNickname"
-        :src="item"
+        :title="item.title"
+        :src="item.video.assets.source.url"
         :muted="itemIndex !== modelValue"
         :paused="itemIndex !== modelValue"
         :rounded="!isMobile"
+        @click:explore="() => onExplore(item.url)"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import type { Video } from '@/models/video'
+
 type VideoSliderModel = number
 
 interface VideoSliderProps {
-  items?: string[],
+  items?: Video[],
 }
 </script>
 
@@ -110,6 +113,10 @@ const changeSlide = (deltaY: number) => {
     return
   }
   modelValue.value = targetSlideIndex
+}
+
+const onExplore = (url: string) => {
+  window.open(url, '_blank')
 }
 </script>
 

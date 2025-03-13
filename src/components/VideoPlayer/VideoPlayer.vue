@@ -15,7 +15,10 @@
       :muted="muted"
       :volume="videoVolume"
     />
-    <video-player-actions />
+    <video-player-actions
+      @click:favorite="onFavorite"
+      @click:explore="onExplore"
+    />
     <video-player-footer
       :title="title"
       :progress="computedProgress"
@@ -48,6 +51,11 @@ const props = withDefaults(defineProps<VideoPlayerProps>(), {
   rounded: false,
 })
 
+const emit = defineEmits([
+  'click:favorite',
+  'click:explore',
+])
+
 const { isMobile } = useDevice()
 const headerVisible = ref(false)
 
@@ -69,6 +77,9 @@ const computedClass = computed(() => ([
   'video-player',
   { 'video-player_rounded': props.rounded },
 ]))
+
+const onFavorite = () => emit('click:favorite')
+const onExplore = () => emit('click:explore')
 </script>
 
 <style lang="scss" src="./VideoPlayer.scss">
