@@ -1,3 +1,6 @@
 .video-player-source {
-  @apply h-full object-contain aspect-[9/16];
+  // Basic
+  @apply h-full object-contain;
+
+  @apply sm:aspect-[9/16];
 }

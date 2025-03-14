@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 type RouteGroup = {
   default: RouteRecordRaw[],
