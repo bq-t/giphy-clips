@@ -1,12 +1,19 @@
-import { onBeforeUnmount, onMounted, ref, type Ref } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, type Ref } from 'vue'
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down'
 export type SwipeHandler = (direction: SwipeDirection) => void
 
+export type HoldDelta = { x: number, y: number }
+export type HoldHandler = (delta: HoldDelta) => void
+
 export const useTouch = (elementRef: Ref<HTMLElement | undefined>) => {
+  const handlers = reactive({
+    swipe: [] as SwipeHandler[],
+    hold: [] as HoldHandler[],
+  })
+
   const touchStartX = ref(0)
   const touchStartY = ref(0)
-  const handlers = ref<SwipeHandler[]>([])
 
   const onTouchStart = (e: TouchEvent) => {
     if (!e.touches.length) {
@@ -18,10 +25,24 @@ export const useTouch = (elementRef: Ref<HTMLElement | undefined>) => {
 
   const onTouchMove = (e: TouchEvent) => {
     e.preventDefault()
+
+    if (!e.touches.length) {
+      return
+    }
+    const touchMoveX = e.changedTouches[0].clientX
+    const touchMoveY = e.changedTouches[0].clientY
+
+    const touchMoveDeltaX = touchMoveX - touchStartX.value
+    const touchMoveDeltaY = touchMoveY - touchStartY.value
+
+    handlers.hold.forEach(handler => handler({
+      x: touchMoveDeltaX,
+      y: touchMoveDeltaY,
+    }))
   }
 
   const onTouchEnd = (e: TouchEvent) => {
-    if (!e.changedTouches.length || !handlers.value.length) {
+    if (!e.changedTouches.length || !handlers.swipe.length) {
       return
     }
     const touchEndX = e.changedTouches[0].clientX
@@ -46,7 +67,7 @@ export const useTouch = (elementRef: Ref<HTMLElement | undefined>) => {
       direction = touchEndDeltaX > 0 ? 'right' : 'left'
     }
 
-    handlers.value.forEach(handler => handler(direction))
+    handlers.swipe.forEach(handler => handler(direction))
   }
 
   onMounted(() => {
@@ -71,13 +92,21 @@ export const useTouch = (elementRef: Ref<HTMLElement | undefined>) => {
 
   // Exported methods
   const onSwipe = (handler: SwipeHandler) => {
-    handlers.value.push(handler)
+    handlers.swipe.push(handler)
     return () => {
-      handlers.value = handlers.value.filter(h => h !== handler)
+      handlers.swipe = handlers.swipe.filter(h => h !== handler)
+    }
+  }
+
+  const onHold = (handler: HoldHandler) => {
+    handlers.hold.push(handler)
+    return () => {
+      handlers.hold = handlers.hold.filter(h => h !== handler)
     }
   }
 
   return {
     onSwipe,
+    onHold,
   }
 }

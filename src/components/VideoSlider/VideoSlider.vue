@@ -29,6 +29,7 @@
 
 <script lang="ts">
 import type { Video } from '@/models/video'
+import type { ScrollDirection, SwipeDirection, HoldDelta } from '@/composables'
 
 type VideoSliderModel = number
 
@@ -40,7 +41,7 @@ interface VideoSliderProps {
 <script lang="ts" setup>
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue'
 import { computed, ref, watch } from 'vue'
-import { useDevice, useTouch, useScroll, type ScrollDirection, type SwipeDirection } from '@/composables'
+import { useDevice, useTouch, useScroll } from '@/composables'
 
 const props = withDefaults(defineProps<VideoSliderProps>(), {
   items: () => ([]),
@@ -57,15 +58,19 @@ watch(() => modelValue.value, (val, oldVal) => {
   onChangeSlide(val, val < oldVal)
 })
 
+const sliderSwipeOffset = ref(0)
 const sliderTransformOffset = ref(0)
-const computedStyle = computed(() => ({
-  transform: `translateY(${sliderTransformOffset.value}px)`,
-}))
+const computedStyle = computed(() => {
+  const computedOffset = sliderTransformOffset.value + sliderSwipeOffset.value
+  return {
+    transform: `translateY(${computedOffset}px)`,
+  }
+})
 
 const { isMobile } = useDevice()
 
 const sliderRef = ref<HTMLElement>()
-const { onSwipe } = useTouch(sliderRef)
+const { onSwipe, onHold } = useTouch(sliderRef)
 const { onScroll } = useScroll(sliderRef)
 
 const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = false) => {
@@ -76,7 +81,18 @@ const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = fal
   changeSlide(direction === swipeDirection)
 }
 
-onSwipe((direction: SwipeDirection) => swipeHandler(direction, true))
+onSwipe((direction: SwipeDirection) => {
+  sliderSwipeOffset.value = 0
+  swipeHandler(direction, true)
+})
+
+onHold((delta: HoldDelta) => {
+  if (Math.abs(delta.y) >= 300) {
+    return
+  }
+  sliderSwipeOffset.value = delta.y
+})
+
 onScroll((direction: ScrollDirection) => swipeHandler(direction))
 
 const changeSlide = (toTop: boolean = false) => {
