@@ -1,10 +1,9 @@
 <template>
   <div class="recommendations-page">
     <video-slider
-      v-model="currentVideo"
+      v-model="currentSlide"
       class="recommendations-page__slider"
       :items="recommendations"
-      @update:model-value="onSlide"
     />
     <div
       v-if="!isMobile"
@@ -26,29 +25,15 @@
 
 <script setup lang="ts">
 import VideoSlider from '@/components/VideoSlider/VideoSlider.vue'
-import { ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
+import { ref, onMounted, watch } from 'vue'
 import { useDevice } from '@/composables'
 import { useClipsStore } from '@/stores/clips'
-
-const currentVideo = ref(0)
-function slideUp() {
-  if (currentVideo.value === 0) {
-    return
-  }
-  currentVideo.value--
-}
-function slideDown() {
-  if (currentVideo.value === recommendations.length - 1) {
-    return
-  }
-  currentVideo.value++
-}
 
 const { isMobile } = useDevice()
 
 const { recommendations, getRecommendations } = useClipsStore()
 
+const currentSlide = ref(0)
 const recommendationsPending = ref(false)
 onMounted(() => {
   if (recommendations.length) {
@@ -58,13 +43,27 @@ onMounted(() => {
     .then(() => recommendationsPending.value = false)
 })
 
-function onSlide(value: number) {
-  if (value < recommendations.length - 1) {
+watch(() => currentSlide.value, (val: number) => {
+  if (val < recommendations.length - 1) {
     return
   }
   recommendationsPending.value = true
   getRecommendations(recommendations.length)
     .then(() => recommendationsPending.value = false)
+})
+
+const slideUp = () => {
+  if (currentSlide.value === 0) {
+    return
+  }
+  currentSlide.value--
+}
+
+const slideDown = () => {
+  if (currentSlide.value === recommendations.length - 1) {
+    return
+  }
+  currentSlide.value++
 }
 </script>
 
