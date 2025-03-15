@@ -4,20 +4,25 @@
     class="video-slider"
   >
     <div
-      v-for="(item, itemIndex) in items"
-      :key="itemIndex"
-      :data-scroll-index="itemIndex"
-      :data-item-active="itemIndex === modelValue"
-      class="video-slider__item"
+      class="video-slider__wrapper"
+      :style="computedStyle"
     >
-      <video-player
-        :title="item.title"
-        :src="item.video.assets.source.url"
-        :muted="itemIndex !== modelValue"
-        :paused="itemIndex !== modelValue"
-        :rounded="!isMobile"
-        @click:explore="() => onExplore(item.url)"
-      />
+      <div
+        v-for="(item, itemIndex) in items"
+        :key="itemIndex"
+        :data-scroll-index="itemIndex"
+        :data-item-active="itemIndex === modelValue"
+        class="video-slider__item"
+      >
+        <video-player
+          :title="item.title"
+          :src="item.video.assets.source.url"
+          :muted="itemIndex !== modelValue"
+          :paused="itemIndex !== modelValue"
+          :rounded="!isMobile"
+          @click:explore="() => onExplore(item.url)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -34,10 +39,8 @@ interface VideoSliderProps {
 
 <script lang="ts" setup>
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue'
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useDevice } from '@/composables'
-
-const { isMobile } = useDevice()
+import { computed, ref, watch } from 'vue'
+import { useDevice, useTouch, useScroll, type ScrollDirection, type SwipeDirection } from '@/composables'
 
 const props = withDefaults(defineProps<VideoSliderProps>(), {
   items: () => ([]),
@@ -47,72 +50,67 @@ const modelValue = defineModel<VideoSliderModel>({
   default: 0,
 })
 
-onMounted(() => {
-  sliderRef.value.addEventListener('wheel', onScroll)
-  sliderRef.value.addEventListener('touchstart', onTouchStart, { passive: true })
-  sliderRef.value.addEventListener('touchmove', onTouchMove)
-  sliderRef.value.addEventListener('touchend', onTouchEnd, { passive: true })
-})
-
-onBeforeUnmount(() => {
-  sliderRef.value.removeEventListener('wheel', onScroll)
-  sliderRef.value.removeEventListener('touchstart', onTouchStart)
-  sliderRef.value.removeEventListener('touchmove', onTouchMove)
-  sliderRef.value.removeEventListener('touchend', onTouchEnd)
-})
-
-// Slide to element
-const sliderRef = ref()
 watch(() => modelValue.value, (val, oldVal) => {
   if (val === oldVal) {
     return
   }
+  onChangeSlide(val, val < oldVal)
+})
 
-  const availableElements = sliderRef.value.querySelectorAll('[data-scroll-index]') as HTMLElement[]
-  const targetElement = Array.from(availableElements).find(element => {
+const sliderTransformOffset = ref(0)
+const computedStyle = computed(() => ({
+  transform: `translateY(${sliderTransformOffset.value}px)`,
+}))
+
+const { isMobile } = useDevice()
+
+const sliderRef = ref<HTMLElement>()
+const { onSwipe } = useTouch(sliderRef)
+const { onScroll } = useScroll(sliderRef)
+
+const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = false) => {
+  if (!['up', 'down'].includes(direction)) {
+    return
+  }
+  const swipeDirection = reverse ? 'down' : 'up'
+  changeSlide(direction === swipeDirection)
+}
+
+onSwipe((direction: SwipeDirection) => swipeHandler(direction, true))
+onScroll((direction: ScrollDirection) => swipeHandler(direction))
+
+const changeSlide = (toTop: boolean = false) => {
+  const slideDirection = toTop ? -1 : 1
+  const targetSlideIndex = Math.max(0, Math.min(modelValue.value + slideDirection, props.items.length - 1))
+  if (targetSlideIndex === modelValue.value) {
+    return
+  }
+
+  modelValue.value = targetSlideIndex
+}
+
+const onChangeSlide = (slideIndex: number, toTop = false) => {
+  if (!sliderRef.value) {
+    return
+  }
+  const availableSlides: NodeListOf<Element> = sliderRef.value.querySelectorAll('[data-scroll-index]')
+  const targetSlideElement = Array.from(availableSlides).find((element: Element) => {
     const scrollIndex: string | null = element.getAttribute('data-scroll-index')
     if (!scrollIndex) {
       return false
     }
-    return val === parseInt(scrollIndex)
+    return slideIndex === parseInt(scrollIndex)
   })
 
-  if (!targetElement) {
+  if (!targetSlideElement) {
     return
   }
 
-  targetElement.scrollIntoView({
-    behavior: 'smooth',
-  })
-})
-
-const onScroll = (e: WheelEvent) => {
-  e.preventDefault()
-  return changeSlide(e.deltaY)
-}
-
-
-let touchStartY = 0
-const onTouchStart = (e: TouchEvent) => touchStartY = e.touches[0].clientY
-const onTouchMove = (e: TouchEvent) => e.preventDefault()
-const onTouchEnd = (e: TouchEvent) => {
-  const touchEndY = e.changedTouches[0].clientY
-  const touchEndDeltaY = touchStartY - touchEndY
-
-  if (Math.abs(touchEndDeltaY) <= 30) {
-    return
+  let transformModifier = targetSlideElement.clientHeight
+  if (!toTop) {
+    transformModifier *= -1
   }
-  return changeSlide(touchEndDeltaY)
-}
-
-const changeSlide = (deltaY: number) => {
-  const direction = Math.sign(deltaY)
-  const targetSlideIndex = Math.max(0, Math.min(modelValue.value + direction, props.items.length - 1))
-
-  if (targetSlideIndex === modelValue.value) {
-    return
-  }
-  modelValue.value = targetSlideIndex
+  sliderTransformOffset.value += transformModifier
 }
 
 const onExplore = (url: string) => {

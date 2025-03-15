@@ -1,10 +1,9 @@
 .video-slider {
-  @apply h-full overflow-y-auto overflow-x-hidden snap-mandatory snap-y;
+  @apply h-full overflow-hidden;
   @apply sm:space-y-2.5;
 
-  // Hide scrollbar
-  &::-webkit-scrollbar {
-    @apply hidden w-0;
+  &__wrapper {
+    @apply h-full w-full overflow-visible transition-transform ease-out duration-300;
   }
 
   &__item {
