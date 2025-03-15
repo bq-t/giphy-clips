@@ -5,10 +5,10 @@
   @apply sm:aspect-[9/16];
 
   &__base {
-    @apply h-full object-contain relative z-10;
+    @apply h-full w-full object-contain relative z-10;
   }
 
   &__lazy {
-    @apply absolute h-full top-0 object-cover blur-sm;
+    @apply absolute h-full w-full top-0 object-cover blur-sm;
   }
 }
