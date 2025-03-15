@@ -1,0 +1,1 @@
+import{g as n,f as s}from"./index-BkytEf6T.js";const a=(e,r)=>{const t=e.__vccOpts||e;for(const[o,c]of r)t[o]=c;return t},_={};function f(e,r){return s(),n("div",null," Browser page ")}const p=a(_,[["render",f]]);export{p as default};
