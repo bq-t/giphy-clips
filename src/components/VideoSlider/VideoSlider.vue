@@ -17,6 +17,7 @@
         <video-player
           :title="item.title"
           :src="item.video.assets.source.url"
+          :lazy-src="item.images.downsized.url"
           :muted="itemIndex !== modelValue"
           :paused="itemIndex !== modelValue"
           :rounded="!isMobile"

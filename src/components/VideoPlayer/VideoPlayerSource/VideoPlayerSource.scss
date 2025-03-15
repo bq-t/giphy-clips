@@ -1,6 +1,14 @@
 .video-player-source {
   // Basic
-  @apply h-full object-contain;
+  @apply relative h-full;
 
   @apply sm:aspect-[9/16];
+
+  &__base {
+    @apply h-full object-contain relative z-10;
+  }
+
+  &__lazy {
+    @apply absolute h-full top-0 object-cover blur-sm;
+  }
 }

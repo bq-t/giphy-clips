@@ -3,7 +3,7 @@
   @apply sm:aspect-[9/16] sm:w-max;
 
   &-header {
-    @apply absolute top-0 z-10;
+    @apply absolute top-0 z-30;
   }
 
   &-source {
@@ -12,11 +12,11 @@
   }
 
   &-actions {
-    @apply absolute top-[calc(50%-3.125rem)] right-4 z-10;
+    @apply absolute top-[calc(50%-3.125rem)] right-4 z-30;
   }
 
   &-footer {
-    @apply absolute bottom-0 z-10;
+    @apply absolute bottom-0 z-30;
   }
 
   // Modifiers

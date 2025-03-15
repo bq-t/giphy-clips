@@ -1,6 +1,5 @@
 .video-slider {
   @apply h-full overflow-hidden;
-  @apply sm:space-y-2.5;
 
   &__wrapper {
     @apply h-full w-full overflow-visible transition-transform ease-out duration-300;

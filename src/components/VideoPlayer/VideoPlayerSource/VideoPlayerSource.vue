@@ -1,20 +1,27 @@
 <template>
-  <video
-    ref="videoRef"
-    class="video-player-source"
-    crossorigin="anonymous"
-    :src="source"
-    :muted="isMuted"
-    playsinline
-    autoplay
-    loop
-    @click="switchVideoPlayState"
-  />
+  <div class="video-player-source">
+    <img
+      class="video-player-source__lazy"
+      :src="lazySource"
+    />
+    <video
+      ref="videoRef"
+      class="video-player-source__base"
+      crossorigin="anonymous"
+      :src="source"
+      :muted="isMuted"
+      playsinline
+      autoplay
+      loop
+      @click="switchVideoPlayState"
+    />
+  </div>
 </template>
 
 <script lang="ts">
 interface VideoPlayerSourceProps {
   source: string,
+  lazySource: string,
   muted?: boolean,
   paused?: boolean,
   volume?: number,

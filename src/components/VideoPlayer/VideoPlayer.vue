@@ -11,6 +11,7 @@
     <video-player-source
       ref="videoSource"
       :source="src"
+      :lazy-source="lazySrc"
       :paused="paused"
       :muted="muted"
       :volume="videoVolume"
@@ -30,6 +31,7 @@
 interface VideoPlayerProps {
   title: string,
   src: string,
+  lazySrc: string,
   muted?: boolean,
   paused?: boolean,
   rounded?: boolean,
