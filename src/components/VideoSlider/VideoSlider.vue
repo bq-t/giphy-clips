@@ -8,6 +8,18 @@
       :style="computedStyle"
     >
       <div
+        ref="loaderRef"
+        class="video-slider__loader"
+      >
+        <gc-icon
+          class="video-slider__loader-icon"
+          name="sync"
+          color="primary"
+          size="lg"
+          :style="computedLoaderStyle"
+        />
+      </div>
+      <div
         v-for="(item, itemIndex) in items"
         :key="itemIndex"
         :data-scroll-index="itemIndex"
@@ -41,7 +53,7 @@ interface VideoSliderProps {
 
 <script lang="ts" setup>
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useDevice, useTouch, useScroll } from '@/composables'
 
 const props = withDefaults(defineProps<VideoSliderProps>(), {
@@ -68,6 +80,16 @@ const computedStyle = computed(() => {
   }
 })
 
+const loaderTransformRotation = ref(0)
+const computedLoaderStyle = computed(() => ({
+  transform: `rotate(${loaderTransformRotation.value}deg)`,
+}))
+
+const loaderRef = ref<HTMLElement>()
+onMounted(() => {
+  sliderTransformOffset.value = -loaderRef.value.clientHeight
+})
+
 const { isMobile } = useDevice()
 
 const sliderRef = ref<HTMLElement>()
@@ -84,10 +106,15 @@ const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = fal
 
 onSwipe((direction: SwipeDirection) => {
   sliderSwipeOffset.value = 0
+  loaderTransformRotation.value = 0
   swipeHandler(direction, true)
 })
 
 onHold((delta: HoldDelta) => {
+  if (modelValue.value === 0 && delta.y > 0) {
+    loaderTransformRotation.value = delta.y * -1
+  }
+
   if (Math.abs(delta.y) >= 300) {
     return
   }

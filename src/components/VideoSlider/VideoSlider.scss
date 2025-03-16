@@ -12,4 +12,12 @@
     @apply w-screen;
     @apply sm:w-max;
   }
+
+  &__loader {
+    @apply flex justify-center pb-4;
+
+    &-icon {
+      @apply transition-transform ease-out;
+    }
+  }
 }
