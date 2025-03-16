@@ -12,7 +12,10 @@
   }
 
   &-actions {
-    @apply absolute top-[calc(50%-3.125rem)] right-4 z-30;
+    @apply absolute z-30;
+
+    @apply bottom-5 right-2.5;
+    @apply sm:top-[calc(50%-3.125rem)] sm:right-4;
   }
 
   &-footer {
