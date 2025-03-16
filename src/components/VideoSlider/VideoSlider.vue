@@ -87,6 +87,9 @@ const computedLoaderStyle = computed(() => ({
 
 const loaderRef = ref<HTMLElement>()
 onMounted(() => {
+  if (!loaderRef?.value) {
+    return
+  }
   sliderTransformOffset.value = -loaderRef.value.clientHeight
 })
 
