@@ -5,10 +5,34 @@
   @apply sm:aspect-[9/16];
 
   &__base {
-    @apply h-full w-full object-contain relative z-10;
+    @apply relative z-10;
+    @apply h-full w-full object-contain;
   }
 
   &__lazy {
-    @apply absolute h-full w-full top-0 object-cover blur-sm;
+    @apply absolute z-0;
+    @apply h-full w-full top-0 object-cover blur-sm;
+  }
+
+  &__overlay {
+    @apply absolute h-full w-full z-20;
+
+    &-pause {
+      @apply absolute top-[calc(50%-3rem)] left-[calc(50%-3rem)] drop-shadow-md;
+
+      // Override styles
+      .gc-icon__svg {
+        @apply text-8xl;
+      }
+    }
+
+    &-loader {
+      @apply relative z-30;
+      @apply w-full h-full bg-black;
+
+      &-skeleton {
+        @apply animate-pulse bg-dark-gray w-full h-full;
+      }
+    }
   }
 }

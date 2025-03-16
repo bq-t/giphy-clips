@@ -1,5 +1,21 @@
 <template>
   <div class="video-player-source">
+    <div
+      class="video-player-source__overlay"
+      @click="switchState"
+    >
+      <gc-icon
+        v-if="videoPaused"
+        class="video-player-source__overlay-pause"
+        name="play-arrow"
+      />
+      <div
+        v-if="videoLoading"
+        class="video-player-source__overlay-loader"
+      >
+        <div class="video-player-source__overlay-loader-skeleton" />
+      </div>
+    </div>
     <img
       class="video-player-source__lazy"
       :src="lazySource"
@@ -13,6 +29,10 @@
       playsinline
       autoplay
       loop
+      @pause="videoPaused = true"
+      @play="videoPaused = false"
+      @canplaythrough="videoLoading = false"
+      @loadstart="videoLoading = true"
       @click="switchVideoPlayState"
     />
   </div>
@@ -41,6 +61,8 @@ const videoRef = ref()
 const videoDuration = ref(1)
 const videoTimestamp = ref(0)
 const videoVolume = ref(props.volume)
+const videoPaused = ref(props.paused)
+const videoLoading = ref(true)
 
 // Listeners
 const updateTime = () => {
@@ -68,6 +90,14 @@ function updateVolume(value: number) {
   }
   videoRef.value.volume = (value / 100)
   videoVolume.value = value
+}
+
+function switchState() {
+  if (videoLoading.value) {
+    return
+  }
+  videoPaused.value
+    ? playVideo() : pauseVideo()
 }
 
 function playVideo() {
