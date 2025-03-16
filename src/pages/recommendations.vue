@@ -12,11 +12,13 @@
       <gc-button
         icon="arrow-back-ios-new"
         size="lg"
+        :disabled="currentSlide === 0"
         @click="slideUp"
       />
       <gc-button
         icon="arrow-back-ios-new"
         size="lg"
+        :disabled="currentSlide === recommendations.length - 1"
         @click="slideDown"
       />
     </div>

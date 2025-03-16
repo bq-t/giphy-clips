@@ -3,6 +3,7 @@
     <gc-button
       icon="favorite"
       size="lg"
+      disabled
       @click="onFavorite"
     />
     <gc-button
