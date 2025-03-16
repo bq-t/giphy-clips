@@ -81,7 +81,13 @@ const computedClass = computed(() => ([
 ]))
 
 const onFavorite = () => emit('click:favorite')
-const onExplore = () => emit('click:explore')
+const onExplore = () => {
+  if (!videoSource.value) {
+    return
+  }
+  videoSource.value.pauseVideo()
+  emit('click:explore')
+}
 </script>
 
 <style lang="scss" src="./VideoPlayer.scss">
