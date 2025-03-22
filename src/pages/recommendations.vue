@@ -1,26 +1,10 @@
 <template>
   <div class="recommendations-page">
-    <video-slider
-      v-model="currentSlide"
-      class="recommendations-page__slider"
-      :items="recommendations"
-    />
-    <div
-      v-if="!isMobile"
-      class="recommendations-page__controls"
-    >
-      <gc-button
-        icon="arrow-back-ios-new"
-        size="lg"
-        :disabled="currentSlide === 0"
-        @click="slideUp"
-      />
-      <gc-button
-        icon="arrow-back-ios-new"
-        size="lg"
-        :disabled="currentSlide === recommendations.length - 1"
-        @click="slideDown"
-      />
+    <video-slider v-model="currentSlide" class="recommendations-page__slider" :items="recommendations" />
+    <div v-if="!isMobile" class="recommendations-page__controls">
+      <gc-button icon="arrow-back-ios-new" size="lg" :disabled="currentSlide === 0" @click="slideUp" />
+      <gc-button icon="arrow-back-ios-new" size="lg" :disabled="currentSlide === recommendations.length - 1"
+        @click="slideDown" />
     </div>
   </div>
 </template>
@@ -71,19 +55,20 @@ const slideDown = () => {
 
 <style lang="scss">
 .recommendations-page {
-  @apply flex items-center w-full;
+  @apply flex items-center justify-center w-full relative;
+  @apply min-h-screen overflow-x-hidden;
 
   // Basic
   @apply sm:ml-6 sm:py-2.5;
   @apply lg:ml-0;
 
   &__slider {
-    @apply mx-auto;
+    @apply flex-1 max-w-[500px] mx-auto;
   }
 
   &__controls {
-    @apply mr-6 w-[2.5rem];
-    @apply lg:ml-[12.5rem] lg:mr-12;
+    @apply absolute right-6 w-[2.5rem] flex flex-col items-center;
+    @apply lg:static lg:mr-12;
 
     > :first-child {
       @apply rotate-90 mb-5;
