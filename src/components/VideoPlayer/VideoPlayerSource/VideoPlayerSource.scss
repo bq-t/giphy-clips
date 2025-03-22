@@ -17,11 +17,6 @@
 
     &-pause {
       @apply absolute top-[calc(50%-3rem)] left-[calc(50%-3rem)] drop-shadow-md;
-
-      // Override styles
-      .gc-icon__svg {
-        @apply text-8xl;
-      }
     }
 
     &-loader {

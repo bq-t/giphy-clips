@@ -8,6 +8,7 @@
         v-if="videoPaused"
         class="video-player-source__overlay-pause"
         name="play-arrow"
+        size="6rem"
       />
       <div
         v-if="videoLoading"

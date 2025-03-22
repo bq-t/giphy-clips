@@ -18,6 +18,7 @@
       <gc-button
         icon="arrow-back-ios-new"
         size="lg"
+        :loading="recommendationsPending"
         :disabled="currentSlide === recommendations.length - 1"
         @click="slideDown"
       />
