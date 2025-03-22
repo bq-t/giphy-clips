@@ -30,6 +30,7 @@
           :title="item.title"
           :src="item.video.assets.source.url"
           :lazy-src="item.images.downsized.url"
+          :autoplay="itemIndex === modelValue"
           :muted="itemIndex !== modelValue"
           :paused="itemIndex !== modelValue"
           :rounded="!isMobile"
@@ -53,8 +54,10 @@ interface VideoSliderProps {
 
 <script lang="ts" setup>
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useDevice, useTouch, useScroll } from '@/composables'
+import { useVideoSliderStore } from '@/stores'
 
 const props = withDefaults(defineProps<VideoSliderProps>(), {
   items: () => ([]),
@@ -68,15 +71,14 @@ watch(() => modelValue.value, (val, oldVal) => {
   if (val === oldVal) {
     return
   }
-  onChangeSlide(val, val < oldVal)
+  computeOffset()
 })
 
 const sliderSwipeOffset = ref(0)
-const sliderTransformOffset = ref(0)
 const computedStyle = computed(() => {
-  const computedOffset = sliderTransformOffset.value + sliderSwipeOffset.value
+  const generalOffset = sliderTransformOffset.value + sliderSwipeOffset.value
   return {
-    transform: `translateY(${computedOffset}px)`,
+    transform: `translateY(${generalOffset}px)`,
   }
 })
 
@@ -87,10 +89,12 @@ const computedLoaderStyle = computed(() => ({
 
 const loaderRef = ref<HTMLElement>()
 onMounted(() => {
-  if (!loaderRef?.value) {
-    return
-  }
-  sliderTransformOffset.value = -loaderRef.value.clientHeight
+  computeOffset()
+  window.addEventListener('resize', computeOffset)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', computeOffset)
 })
 
 const { isMobile } = useDevice()
@@ -132,32 +136,26 @@ const changeSlide = (toTop: boolean = false) => {
   if (targetSlideIndex === modelValue.value) {
     return
   }
-
   modelValue.value = targetSlideIndex
 }
 
-const onChangeSlide = (slideIndex: number, toTop = false) => {
-  if (!sliderRef.value) {
-    return
-  }
-  const availableSlides: NodeListOf<Element> = sliderRef.value.querySelectorAll('[data-scroll-index]')
-  const targetSlideElement = Array.from(availableSlides).find((element: Element) => {
-    const scrollIndex: string | null = element.getAttribute('data-scroll-index')
-    if (!scrollIndex) {
-      return false
-    }
-    return slideIndex === parseInt(scrollIndex)
-  })
-
-  if (!targetSlideElement) {
+const videoSliderStore = useVideoSliderStore()
+const { offset: sliderTransformOffset } = storeToRefs(videoSliderStore)
+const computeOffset = () => {
+  if (!sliderRef?.value) {
     return
   }
 
-  let transformModifier = targetSlideElement.clientHeight
-  if (!toTop) {
-    transformModifier *= -1
+  let resultOffset = 0
+  if (loaderRef?.value) {
+    resultOffset -= loaderRef.value.clientHeight
   }
-  sliderTransformOffset.value += transformModifier
+
+  const slideItem: Element = sliderRef.value.querySelector('.video-slider__item')
+  if (slideItem) {
+    resultOffset -= modelValue.value * slideItem.clientHeight
+  }
+  videoSliderStore.setOffset(resultOffset)
 }
 
 const onExplore = (url: string) => {

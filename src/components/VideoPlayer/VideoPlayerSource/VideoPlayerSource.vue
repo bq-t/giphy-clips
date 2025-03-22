@@ -27,8 +27,8 @@
       crossorigin="anonymous"
       :src="source"
       :muted="isMuted"
+      :autoplay="autoplay"
       playsinline
-      autoplay
       loop
       @pause="videoPaused = true"
       @play="videoPaused = false"
@@ -43,6 +43,7 @@
 interface VideoPlayerSourceProps {
   source: string,
   lazySource: string,
+  autoplay?: boolean,
   muted?: boolean,
   paused?: boolean,
   volume?: number,
@@ -53,6 +54,7 @@ interface VideoPlayerSourceProps {
 import { computed, ref, onBeforeUnmount, onMounted, watch } from 'vue'
 
 const props = withDefaults(defineProps<VideoPlayerSourceProps>(), {
+  autoplay: false,
   muted: false,
   paused: false,
   volume: 15,

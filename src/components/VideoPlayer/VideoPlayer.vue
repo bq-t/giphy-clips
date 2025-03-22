@@ -12,6 +12,7 @@
       ref="videoSource"
       :source="src"
       :lazy-source="lazySrc"
+      :autoplay="autoplay"
       :paused="paused"
       :muted="muted"
       :volume="videoVolume"
@@ -32,6 +33,7 @@ interface VideoPlayerProps {
   title: string,
   src: string,
   lazySrc: string,
+  autoplay?: boolean,
   muted?: boolean,
   paused?: boolean,
   rounded?: boolean,
@@ -48,6 +50,7 @@ import { useVideoPlayerStore } from '@/stores/videoPlayer'
 import { useDevice } from '@/composables'
 
 const props = withDefaults(defineProps<VideoPlayerProps>(), {
+  autoplay: false,
   muted: false,
   paused: false,
   rounded: false,

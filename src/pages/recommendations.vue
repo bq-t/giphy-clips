@@ -1,9 +1,10 @@
 <template>
   <div class="recommendations-page">
     <video-slider
-      v-model="currentSlide"
+      :model-value="currentRecommendation"
       class="recommendations-page__slider"
       :items="recommendations"
+      @update:model-value="setRecommendation"
     />
     <div
       v-if="!isMobile"
@@ -12,14 +13,14 @@
       <gc-button
         icon="arrow-back-ios-new"
         size="lg"
-        :disabled="currentSlide === 0"
+        :disabled="currentRecommendation === 0"
         @click="slideUp"
       />
       <gc-button
         icon="arrow-back-ios-new"
         size="lg"
         :loading="recommendationsPending"
-        :disabled="currentSlide === recommendations.length - 1"
+        :disabled="currentRecommendation === recommendations.length - 1"
         @click="slideDown"
       />
     </div>
@@ -29,14 +30,16 @@
 <script setup lang="ts">
 import VideoSlider from '@/components/VideoSlider/VideoSlider.vue'
 import { ref, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useDevice } from '@/composables'
 import { useClipsStore } from '@/stores/clips'
 
 const { isMobile } = useDevice()
 
-const { recommendations, getRecommendations } = useClipsStore()
+const clipsStore = useClipsStore()
+const { recommendations, getRecommendations, setRecommendation } = clipsStore
+const { currentRecommendation } = storeToRefs(clipsStore)
 
-const currentSlide = ref(0)
 const recommendationsPending = ref(false)
 onMounted(() => {
   if (recommendations.length) {
@@ -46,7 +49,7 @@ onMounted(() => {
     .then(() => recommendationsPending.value = false)
 })
 
-watch(() => currentSlide.value, (val: number) => {
+watch(() => currentRecommendation.value, (val: number) => {
   if (val < recommendations.length - 1) {
     return
   }
@@ -56,17 +59,17 @@ watch(() => currentSlide.value, (val: number) => {
 })
 
 const slideUp = () => {
-  if (currentSlide.value === 0) {
+  if (currentRecommendation.value === 0) {
     return
   }
-  currentSlide.value--
+  setRecommendation(currentRecommendation.value - 1)
 }
 
 const slideDown = () => {
-  if (currentSlide.value === recommendations.length - 1) {
+  if (currentRecommendation.value === recommendations.length - 1) {
     return
   }
-  currentSlide.value++
+  setRecommendation(currentRecommendation.value + 1)
 }
 </script>
 
