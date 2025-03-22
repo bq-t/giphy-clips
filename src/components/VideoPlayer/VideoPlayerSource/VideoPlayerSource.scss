@@ -2,8 +2,6 @@
   // Basic
   @apply relative h-full;
 
-  @apply sm:aspect-[9/16];
-
   &__base {
     @apply relative z-10;
     @apply h-full w-full object-contain;

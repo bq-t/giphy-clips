@@ -1,5 +1,5 @@
 .video-player {
-  @apply relative h-full w-full overflow-hidden cursor-pointer;
+  @apply relative h-full overflow-hidden cursor-pointer;
   @apply sm:aspect-[9/16] sm:w-max;
 
   &-header {

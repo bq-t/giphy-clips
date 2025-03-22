@@ -10,7 +10,7 @@
     @apply snap-center h-full;
 
     @apply w-screen;
-    @apply sm:w-max;
+    @apply sm:w-full;
   }
 
   &__loader {
