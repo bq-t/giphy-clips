@@ -56,7 +56,7 @@ interface VideoSliderProps {
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDevice, useTouch, useScroll } from '@/composables'
+import { useDevice, useTouch, useScroll, useThrottle } from '@/composables'
 import { useVideoSliderStore } from '@/stores'
 
 const props = withDefaults(defineProps<VideoSliderProps>(), {
@@ -128,7 +128,8 @@ onHold((delta: HoldDelta) => {
   sliderSwipeOffset.value = delta.y
 })
 
-onScroll((direction: ScrollDirection) => swipeHandler(direction))
+const throttleSwipe = useThrottle(swipeHandler, 250)
+onScroll((direction: ScrollDirection) => throttleSwipe(direction))
 
 const changeSlide = (toTop: boolean = false) => {
   const slideDirection = toTop ? -1 : 1
@@ -151,7 +152,7 @@ const computeOffset = () => {
     resultOffset -= loaderRef.value.clientHeight
   }
 
-  const slideItem: Element = sliderRef.value.querySelector('.video-slider__item')
+  const slideItem: Element | null = sliderRef.value.querySelector('.video-slider__item')
   if (slideItem) {
     resultOffset -= modelValue.value * slideItem.clientHeight
   }

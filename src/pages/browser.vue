@@ -10,33 +10,36 @@
   </div>
 </template>
 
+<script lang="ts">
+import type { Video } from '@/models/video'
+</script>
+
 <script setup lang="ts">
 import VideoCard from '@/components/VideoCard/VideoCard.vue'
 import { onMounted, ref } from 'vue'
+import { useThrottle } from '@/composables'
 import { useClipsStore } from '@/stores'
 
 const clipsStore = useClipsStore()
 const { getClips } = clipsStore
 
-const clips = ref([])
+const clips = ref<Video[]>([])
 const clipsOffset = ref(0)
-const clipsPending = ref(true)
 onMounted(() => fetchClips())
 
 const fetchClips = () => {
-  clipsPending.value = true
   getClips(clipsOffset.value).then(data => {
     clips.value.push(...data)
     clipsOffset.value += 18
-  }).finally(() => clipsPending.value = false)
+  })
 }
 
-const onIntersect = (e: IntersectionObserverEntry) => {
-  if (!e.isIntersecting || clipsPending.value) {
+const onIntersect = useThrottle((e: IntersectionObserverEntry) => {
+  if (!e.isIntersecting || !clips.value.length) {
     return
   }
   fetchClips()
-}
+}, 300)
 </script>
 
 <style lang="scss">
