@@ -1,8 +1,8 @@
 <template>
   <div class="video-player-header">
-    <gc-volume-control
+    <gc-volume-input
       v-model="modelValue"
-      :always-show-volume="isTablet"
+      :expanded="isTablet"
     />
   </div>
 </template>

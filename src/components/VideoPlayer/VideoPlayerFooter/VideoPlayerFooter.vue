@@ -6,7 +6,7 @@
     >
       {{ title }}
     </h1>
-    <gc-progress :model-value="progress" />
+    <gc-progressbar :model-value="progress" />
   </div>
 </template>
 
