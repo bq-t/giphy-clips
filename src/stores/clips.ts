@@ -16,10 +16,15 @@ export const useClipsStore = defineStore('clipsStore', () => {
       .then(data => recommendations.push(...data))
   }
 
+  const getClips = (offset: number = 0, limit: number = 18) => {
+    return useMockApi('/clips', { offset, limit })
+  }
+
   return {
     currentRecommendation,
     recommendations,
     setRecommendation,
     getRecommendations,
+    getClips,
   }
 })

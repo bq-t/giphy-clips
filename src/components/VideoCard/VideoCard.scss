@@ -1,0 +1,22 @@
+.video-card {
+  // Basic
+  @apply relative w-full aspect-[240/427] rounded-[1.25rem] overflow-hidden;
+
+  @apply lg:max-w-[11.979166666666666vw];
+
+  &__base {
+    @apply relative z-10;
+    @apply h-full w-full object-contain;
+  }
+
+  &__lazy {
+    @apply absolute top-0 z-0;
+    @apply h-full w-full object-cover blur-sm;
+  }
+
+  &__action {
+    @apply absolute z-20;
+
+    @apply top-2.5 right-2.5;
+  }
+}
