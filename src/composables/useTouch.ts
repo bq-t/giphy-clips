@@ -24,8 +24,6 @@ export const useTouch = (elementRef: Ref<HTMLElement | undefined>) => {
   }
 
   const onTouchMove = (e: TouchEvent) => {
-    e.preventDefault()
-
     if (!e.touches.length) {
       return
     }

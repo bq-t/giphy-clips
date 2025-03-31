@@ -11,8 +11,14 @@ export interface Video {
   trending_datetime: string,
   create_datetime: string,
   update_datetime: string,
+  comments?: CommentData[],
   images: ImagesData,
   video: VideoData,
+}
+
+export interface CommentData {
+  username: string,
+  text: string,
 }
 
 export interface ImagesData {
@@ -20,9 +26,9 @@ export interface ImagesData {
 }
 
 export interface ImagesDataAsset {
-  height: string,
-  width: string,
-  size: string,
+  height?: string,
+  width?: string,
+  size?: string,
   url: string,
 }
 
@@ -33,7 +39,7 @@ export interface VideoData {
 }
 
 export interface VideoDataAsset {
-  height: string,
-  width: string,
+  height?: string,
+  width?: string,
   url: string,
 }

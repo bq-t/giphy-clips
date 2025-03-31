@@ -1,6 +1,6 @@
 .video-card {
   // Basic
-  @apply relative w-full aspect-[240/427] rounded-[1.25rem] overflow-hidden;
+  @apply relative block w-full aspect-[240/427] rounded-[1.25rem] overflow-hidden;
 
   @apply lg:max-w-[11.979166666666666vw];
 

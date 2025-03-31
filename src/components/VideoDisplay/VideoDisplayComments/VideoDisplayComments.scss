@@ -1,0 +1,11 @@
+.video-display-comments {
+  @apply overflow-hidden;
+
+  &__header {
+    @apply font-jost text-sm mb-5;
+  }
+
+  &__list {
+    @apply flex flex-col gap-1.5 h-full overflow-auto;
+  }
+}

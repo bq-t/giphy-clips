@@ -32,9 +32,8 @@
       loop
       @pause="videoPaused = true"
       @play="videoPaused = false"
-      @canplaythrough="videoLoading = false"
       @loadstart="videoLoading = true"
-      @click="switchVideoPlayState"
+      @canplaythrough="onCanPlay"
     />
   </div>
 </template>
@@ -64,7 +63,7 @@ const videoRef = ref()
 const videoDuration = ref(1)
 const videoTimestamp = ref(0)
 const videoVolume = ref(props.volume)
-const videoPaused = ref(props.paused)
+const videoPaused = ref(!props.autoplay)
 const videoLoading = ref(true)
 
 // Listeners
@@ -111,11 +110,9 @@ function pauseVideo() {
   videoRef.value.pause()
 }
 
-function switchVideoPlayState() {
-  const paused = videoRef.value.paused
-  return paused
-    ? playVideo()
-    : pauseVideo()
+function onCanPlay() {
+  videoLoading.value = false
+  videoPaused.value = videoRef.value.paused
 }
 
 defineExpose({

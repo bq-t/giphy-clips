@@ -3,6 +3,7 @@
     <video-card
       v-for="(clip, clipIndex) in clips"
       :key="clipIndex"
+      :to="{ name: 'clips-clipSlug', params: { clipSlug: clip.slug } }"
       :src="clip.images.downsized.url"
       :lazy-src="clip.images.downsized.url"
     />
@@ -29,6 +30,9 @@ onMounted(() => fetchClips())
 
 const fetchClips = () => {
   getClips(clipsOffset.value).then(data => {
+    if (!Array.isArray(data)) {
+      throw new Error('Invalid response format')
+    }
     clips.value.push(...data)
     clipsOffset.value += 18
   })

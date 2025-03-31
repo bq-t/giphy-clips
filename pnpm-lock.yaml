@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@bq-t/giphy-clips-ui':
         specifier: ^1.0.0
-        version: 1.1.1(tailwindcss@3.4.17)(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
+        version: 1.1.2(tailwindcss@3.4.17)(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
       pinia:
         specifier: ^2.3.1
         version: 2.3.1(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
@@ -252,8 +252,8 @@ packages:
     resolution: {integrity: sha512-t8kDRGrKXyp6+tjUh7hw2RLyclsW4TRoRvRHtSyAX9Bb5ldlFh+90YAYY6awRXrlB4G5G2izNeGySpATlFzmOg==}
     engines: {node: '>=6.9.0'}
 
-  '@bq-t/giphy-clips-ui@1.1.1':
-    resolution: {integrity: sha512-/sJK7z1KZH78vpz34IgicYQqHBkY43MzefcgmcACm+gZlogHO3tL0XUHqqXB+6LKw+MAoE/1YA1rKo/5/Y9N2w==}
+  '@bq-t/giphy-clips-ui@1.1.2':
+    resolution: {integrity: sha512-zf10UmWXL8eEFuccrF5caVLDKSOMoqr6h28o9z+DpuZaC2rzZouJxr+uUrr4L930XGgNNswU/fDAFAMlkkB64Q==}
     peerDependencies:
       tailwindcss: ^3.0.0
       vue: ^3.5.0
@@ -2842,7 +2842,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@bq-t/giphy-clips-ui@1.1.1(tailwindcss@3.4.17)(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))':
+  '@bq-t/giphy-clips-ui@1.1.2(tailwindcss@3.4.17)(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))':
     dependencies:
       tailwindcss: 3.4.17
       vue: 3.5.13(typescript@5.7.3)

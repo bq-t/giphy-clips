@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-interface VideoPlayerProps {
+export interface VideoPlayerProps {
   title: string,
   src: string,
   lazySrc: string,

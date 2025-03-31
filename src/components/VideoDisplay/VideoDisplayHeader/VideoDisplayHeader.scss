@@ -1,0 +1,11 @@
+.video-display-header {
+  @apply flex items-center space-x-2.5;
+
+  &__author, &__title {
+    @apply font-jost;
+  }
+
+  &__dot {
+    @apply bg-white size-1 rounded-full;
+  }
+}

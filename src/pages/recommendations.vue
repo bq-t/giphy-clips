@@ -75,9 +75,9 @@ const slideDown = () => {
 
 <style lang="scss">
 .recommendations-page {
+  // Basic
   @apply flex items-center w-full;
 
-  // Basic
   @apply sm:ml-6 sm:py-2.5;
   @apply lg:ml-0;
 

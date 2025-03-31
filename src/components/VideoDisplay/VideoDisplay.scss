@@ -1,0 +1,27 @@
+.video-display {
+  // Basic
+  @apply flex bg-dark-gray transition-transform ease-out duration-300;
+
+  @apply overflow-x-visible;
+  @apply sm:aspect-square sm:rounded-[1.25rem] sm:overflow-x-hidden;
+
+  &__player {
+    // Basic
+    @apply shrink-0;
+
+    @apply w-[100vw];
+    @apply sm:w-max;
+  }
+
+  &__data {
+    @apply flex flex-col gap-y-5 p-5 overflow-hidden;
+
+    // Basic
+    @apply w-[100vw];
+    @apply sm:w-max;
+  }
+
+  &__tags {
+    @apply flex gap-2.5 flex-wrap max-h-40 overflow-auto;
+  }
+}

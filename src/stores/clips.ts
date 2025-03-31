@@ -13,11 +13,20 @@ export const useClipsStore = defineStore('clipsStore', () => {
 
   const getRecommendations = (offset: number = 0, limit: number = 3) => {
     return useMockApi('/clips', { offset, limit })
-      .then(data => recommendations.push(...data))
+      .then(data => {
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid response format')
+        }
+        recommendations.push(...data)
+      })
   }
 
   const getClips = (offset: number = 0, limit: number = 18) => {
     return useMockApi('/clips', { offset, limit })
+  }
+
+  const getClip = (slug: string) => {
+    return useMockApi('/clip', { slug })
   }
 
   return {
@@ -26,5 +35,6 @@ export const useClipsStore = defineStore('clipsStore', () => {
     setRecommendation,
     getRecommendations,
     getClips,
+    getClip,
   }
 })

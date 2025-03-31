@@ -1,0 +1,19 @@
+.video-display-comments-item {
+  @apply flex bg-black p-2.5 rounded-[1.25rem];
+
+  &__avatar {
+    @apply size-[2.625rem] rounded-full;
+  }
+
+  &__data {
+    @apply font-jost ml-2.5 overflow-hidden;
+  }
+
+  &__author {
+    @apply text-sm font-medium truncate;
+  }
+
+  &__text {
+    @apply text-sm break-all;
+  }
+}
