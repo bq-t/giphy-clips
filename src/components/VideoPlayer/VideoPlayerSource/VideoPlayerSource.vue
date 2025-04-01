@@ -111,6 +111,9 @@ function pauseVideo() {
 }
 
 function onCanPlay() {
+  if (!videoRef?.value) {
+    return
+  }
   videoLoading.value = false
   videoPaused.value = videoRef.value.paused
 }

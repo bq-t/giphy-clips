@@ -3,6 +3,7 @@
     <video-card
       v-for="(clip, clipIndex) in clips"
       :key="clipIndex"
+      :id="clip.id"
       :to="{ name: 'clips-clipSlug', params: { clipSlug: clip.slug } }"
       :src="clip.images.downsized.url"
       :lazy-src="clip.images.downsized.url"

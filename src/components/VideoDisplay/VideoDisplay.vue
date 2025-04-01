@@ -6,6 +6,7 @@
   >
     <video-player
       class="video-display__player"
+      :id="id"
       :src="src"
       :lazy-src="lazySrc"
       :title="title"
@@ -37,6 +38,7 @@ import type { SwipeDirection, HoldDelta } from '@/composables'
 import type { Video } from '@/models/video'
 
 interface VideoDisplayProps extends VideoDisplayHeaderProps {
+  id?: Video['id'],
   src?: VideoPlayerProps['src'],
   lazySrc?: VideoPlayerProps['lazySrc'],
   comments?: Video['comments'],

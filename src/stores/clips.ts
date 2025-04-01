@@ -5,7 +5,8 @@ import { useMockApi } from '@/composables'
 
 export const useClipsStore = defineStore('clipsStore', () => {
   const currentRecommendation = ref(0)
-  const recommendations: Video[] = reactive([])
+  const recommendations = reactive<Video[]>([])
+  const favorites = ref<Video['id'][]>([])
 
   const setRecommendation = (index: number) => {
     currentRecommendation.value = index
@@ -29,12 +30,27 @@ export const useClipsStore = defineStore('clipsStore', () => {
     return useMockApi('/clip', { slug })
   }
 
+  const getFavorites = (offset: number = 0, limit: number = 18) => {
+    return useMockApi('/favorites', { offset, limit })
+  }
+
+  const switchFavorite = (id: Video['id']) => {
+    if (favorites.value.includes(id)) {
+      favorites.value = favorites.value.filter((cId: Video['id']) => cId !== id)
+      return
+    }
+    favorites.value.push(id)
+  }
+
   return {
     currentRecommendation,
     recommendations,
+    favorites,
     setRecommendation,
     getRecommendations,
     getClips,
     getClip,
+    getFavorites,
+    switchFavorite,
   }
 })

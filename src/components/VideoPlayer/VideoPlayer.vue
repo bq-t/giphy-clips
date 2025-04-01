@@ -18,6 +18,7 @@
       :volume="videoVolume"
     />
     <video-player-actions
+      :id="id"
       @click:favorite="onFavorite"
       @click:explore="onExplore"
     />
@@ -29,7 +30,9 @@
 </template>
 
 <script lang="ts">
-export interface VideoPlayerProps {
+import type { VideoPlayerActionsProps } from '@/components/VideoPlayer/VideoPlayerActions/VideoPlayerActions.vue'
+
+export interface VideoPlayerProps extends VideoPlayerActionsProps {
   title: string,
   src: string,
   lazySrc: string,

@@ -5,9 +5,9 @@
   >
     <gc-button
       class="video-card__action"
-      icon="favorite-outline"
       size="sm"
-      disabled
+      :icon="computedFavoriteIcon"
+      @click.prevent="onFavorite"
     />
     <img
       class="video-card__base"
@@ -21,9 +21,11 @@
 </template>
 
 <script lang="ts">
+import type { Video } from '@/models'
 import type { RouterLinkProps } from 'vue-router'
 
 interface VideoCardProps {
+  id: Video['id'],
   src: string,
   to: RouterLinkProps['to'],
   lazySrc: string,
@@ -32,11 +34,24 @@ interface VideoCardProps {
 </script>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useClipsStore } from '@/stores'
 
 const props = withDefaults(defineProps<VideoCardProps>(), {
   liked: false,
 })
+
+const clipsStore = useClipsStore()
+const { favorites } = storeToRefs(clipsStore)
+const { switchFavorite } = clipsStore
+
+const computedFavoriteIcon = computed(() => favorites.value.includes(props.id) ? 'favorite' : 'favorite-outline')
+
+const onFavorite = () => {
+  switchFavorite(props.id)
+}
 </script>
 
 <style lang="scss" src="./VideoCard.scss">

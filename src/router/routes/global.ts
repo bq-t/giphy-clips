@@ -15,6 +15,11 @@ export default <RouteRecordRaw[]>[
         name: 'browser',
         component: () => import('@/pages/browser.vue'),
       },
+      {
+        path: 'favorites',
+        name: 'favorites',
+        component: () => import('@/pages/favorites.vue'),
+      },
     ],
   },
 ]

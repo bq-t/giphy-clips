@@ -27,6 +27,7 @@
         class="video-slider__item"
       >
         <video-player
+          :id="item.id"
           :title="item.title"
           :src="item.video.assets.source.url"
           :lazy-src="item.images.downsized.url"

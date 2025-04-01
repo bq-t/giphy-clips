@@ -29,5 +29,10 @@ const navbarItems = <ListItemProps[]>[
     icon: 'explore-outline',
     to: { name: 'browser' },
   },
+  {
+    title: 'Favorites',
+    icon: 'favorite-outline',
+    to: { name: 'favorites' },
+  },
 ]
 </script>

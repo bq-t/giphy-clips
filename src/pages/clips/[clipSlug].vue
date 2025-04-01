@@ -2,6 +2,7 @@
   <div class="clips-clipSlug-page">
     <video-display
       class="clips-clipSlug-page__display"
+      :id="clipData.id"
       :title="clipData.title"
       :username="clipData.username"
       :src="clipData.video?.assets?.source?.url"

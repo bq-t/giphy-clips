@@ -1,5 +1,6 @@
 import mockApiData from '@/data/mockApiData.json'
 import mockComments from '@/data/mockComments.json'
+import { useClipsStore } from '@/stores'
 import type { Video, CommentData } from '@/models/video'
 
 type MockApiResponse<T> = Promise<T>
@@ -52,12 +53,23 @@ export const useMockApi = <T extends Video | Video[]>(
     }
   }
 
+  const favoritesCallback = (): Video[] => {
+    const { favorites } = useClipsStore()
+    const clips = (mockApiData as Video[])
+      .filter(clip => favorites.includes(clip.id))
+
+    const offset = Number(body.offset)
+    const count = Number(body.offset) + Number(body.limit)
+    return clips.slice(offset, count)
+  }
+
   /**
    * Mock endpoints
    */
   const ENDPOINTS = {
     '/clips': clipsCallback,
     '/clip': clipCallback,
+    '/favorites': favoritesCallback,
   }
 
   return new Promise((resolve, reject) => {
