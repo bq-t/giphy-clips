@@ -15,10 +15,10 @@
 </template>
 
 <script lang="ts">
-import type { Video } from '@/models'
+import type { Video } from '@/models/video'
 
 export interface VideoPlayerActionsProps {
-  id: Video['id'],
+  id?: Video['id'],
 }
 </script>
 
@@ -27,7 +27,9 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useClipsStore } from '@/stores'
 
-const props = defineProps<VideoPlayerActionsProps>()
+const props = withDefaults(defineProps<VideoPlayerActionsProps>(), {
+  id: '',
+})
 
 const emit = defineEmits([
   'click:favorite',

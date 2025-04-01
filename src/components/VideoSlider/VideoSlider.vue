@@ -16,6 +16,7 @@
           name="sync"
           color="primary"
           size="lg"
+          :class="computedLoaderClass"
           :style="computedLoaderStyle"
         />
       </div>
@@ -47,8 +48,11 @@ import type { Video } from '@/models/video'
 import type { ScrollDirection, SwipeDirection, HoldDelta } from '@/composables'
 
 type VideoSliderModel = number
+type VideoSliderLoadingModel = boolean
 
 interface VideoSliderProps {
+  modelValue?: VideoSliderModel,
+  loading?: VideoSliderLoadingModel,
   items?: Video[],
 }
 </script>
@@ -68,6 +72,10 @@ const modelValue = defineModel<VideoSliderModel>({
   default: 0,
 })
 
+const loading = defineModel<VideoSliderLoadingModel>('loading', {
+  default: false,
+})
+
 watch(() => modelValue.value, (val, oldVal) => {
   if (val === oldVal) {
     return
@@ -77,7 +85,11 @@ watch(() => modelValue.value, (val, oldVal) => {
 
 const sliderSwipeOffset = ref(0)
 const computedStyle = computed(() => {
-  const generalOffset = sliderTransformOffset.value + sliderSwipeOffset.value
+  let generalOffset = sliderTransformOffset.value + sliderSwipeOffset.value
+  if (loading.value && loaderRef?.value) {
+    generalOffset += loaderRef.value.clientHeight
+  }
+
   return {
     transform: `translateY(${generalOffset}px)`,
   }
@@ -87,6 +99,11 @@ const loaderTransformRotation = ref(0)
 const computedLoaderStyle = computed(() => ({
   transform: `rotate(${loaderTransformRotation.value}deg)`,
 }))
+
+const computedLoaderClass = computed(() => loading.value
+  ? 'video-slider__loader-icon_active'
+  : null
+)
 
 const loaderRef = ref<HTMLElement>()
 onMounted(() => {
@@ -115,6 +132,10 @@ const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = fal
 onSwipe((direction: SwipeDirection) => {
   sliderSwipeOffset.value = 0
   loaderTransformRotation.value = 0
+  if (modelValue.value === 0 && direction === 'down') {
+    loading.value = true
+    return
+  }
   swipeHandler(direction, true)
 })
 

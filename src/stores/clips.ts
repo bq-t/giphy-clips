@@ -5,7 +5,7 @@ import { useMockApi } from '@/composables'
 
 export const useClipsStore = defineStore('clipsStore', () => {
   const currentRecommendation = ref(0)
-  const recommendations = reactive<Video[]>([])
+  const recommendations = ref<Video[]>([])
   const favorites = ref<Video['id'][]>([])
 
   const setRecommendation = (index: number) => {
@@ -18,8 +18,13 @@ export const useClipsStore = defineStore('clipsStore', () => {
         if (!Array.isArray(data)) {
           throw new Error('Invalid response format')
         }
-        recommendations.push(...data)
+        recommendations.value.push(...data)
       })
+  }
+
+  const flushRecommendations = () => {
+    recommendations.value = []
+    currentRecommendation.value = 0
   }
 
   const getClips = (offset: number = 0, limit: number = 18) => {
@@ -48,6 +53,7 @@ export const useClipsStore = defineStore('clipsStore', () => {
     favorites,
     setRecommendation,
     getRecommendations,
+    flushRecommendations,
     getClips,
     getClip,
     getFavorites,

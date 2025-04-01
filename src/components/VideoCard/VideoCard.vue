@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import type { Video } from '@/models'
+import type { Video } from '@/models/video'
 import type { RouterLinkProps } from 'vue-router'
 
 interface VideoCardProps {

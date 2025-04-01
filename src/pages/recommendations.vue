@@ -4,6 +4,8 @@
       :model-value="currentRecommendation"
       class="recommendations-page__slider"
       :items="recommendations"
+      :loading="recommendationsPending"
+      @update:loading="onRefresh"
       @update:model-value="setRecommendation"
     />
     <div
@@ -37,25 +39,22 @@ import { useClipsStore } from '@/stores/clips'
 const { isMobile } = useDevice()
 
 const clipsStore = useClipsStore()
-const { recommendations, getRecommendations, setRecommendation } = clipsStore
-const { currentRecommendation } = storeToRefs(clipsStore)
+const { getRecommendations, setRecommendation, flushRecommendations } = clipsStore
+const { currentRecommendation, recommendations } = storeToRefs(clipsStore)
 
 const recommendationsPending = ref(false)
 onMounted(() => {
-  if (recommendations.length) {
+  if (recommendations.value.length) {
     return
   }
-  getRecommendations()
-    .then(() => recommendationsPending.value = false)
+  fetchRecommendations(true)
 })
 
 watch(() => currentRecommendation.value, (val: number) => {
-  if (val < recommendations.length - 1) {
+  if (val < recommendations.value.length - 1) {
     return
   }
-  recommendationsPending.value = true
-  getRecommendations(recommendations.length)
-    .then(() => recommendationsPending.value = false)
+  fetchRecommendations()
 })
 
 const slideUp = () => {
@@ -66,10 +65,29 @@ const slideUp = () => {
 }
 
 const slideDown = () => {
-  if (currentRecommendation.value === recommendations.length - 1) {
+  if (currentRecommendation.value === recommendations.value.length - 1) {
     return
   }
   setRecommendation(currentRecommendation.value + 1)
+}
+
+const fetchRecommendations = (refresh: boolean = false) => {
+  let offset = recommendations.value.length
+  if (refresh) {
+    offset = 0
+    flushRecommendations()
+  }
+
+  recommendationsPending.value = true
+  getRecommendations(offset)
+    .finally(() => recommendationsPending.value = false)
+}
+
+const onRefresh = (state: boolean) => {
+  if (!state) {
+    return
+  }
+  fetchRecommendations(true)
 }
 </script>
 
