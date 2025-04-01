@@ -6,7 +6,7 @@ import { useMockApi } from '@/composables'
 export const useClipsStore = defineStore('clipsStore', () => {
   const currentRecommendation = ref(0)
   const recommendations = ref<Video[]>([])
-  const favorites = ref<Video['id'][]>([])
+  const favorites = ref<Video['id'][]>(JSON.parse(localStorage.getItem('favoriteClips') || '[]'))
 
   const setRecommendation = (index: number) => {
     currentRecommendation.value = index
@@ -40,11 +40,12 @@ export const useClipsStore = defineStore('clipsStore', () => {
   }
 
   const switchFavorite = (id: Video['id']) => {
-    if (favorites.value.includes(id)) {
-      favorites.value = favorites.value.filter((cId: Video['id']) => cId !== id)
-      return
-    }
-    favorites.value.push(id)
+    const updatedValue = favorites.value.includes(id)
+      ? favorites.value.filter((cId: Video['id']) => cId !== id)
+      : [...favorites.value, id]
+
+    localStorage.setItem('favoriteClips', JSON.stringify(updatedValue))
+    favorites.value = updatedValue
   }
 
   return {
