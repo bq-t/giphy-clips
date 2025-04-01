@@ -77,7 +77,9 @@ const displaySwipeOffset = ref(0)
 const displayTransformOffset = ref(0)
 
 const displayRef = ref<HTMLElement>()
-const { onSwipe, onHold } = useTouch(displayRef)
+const { onSwipe, onHold } = useTouch(displayRef, {
+  hold: { preventDefault: false },
+})
 
 onSwipe((direction: SwipeDirection) => {
   if (!['left', 'right'].includes(direction)) {

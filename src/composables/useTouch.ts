@@ -1,12 +1,23 @@
 import { onBeforeUnmount, onMounted, reactive, ref, type Ref } from 'vue'
 
+export type TouchRef = Ref<HTMLElement | undefined>
+export type TouchOptions = {
+  hold: { preventDefault?: boolean },
+}
+
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down'
 export type SwipeHandler = (direction: SwipeDirection) => void
 
 export type HoldDelta = { x: number, y: number }
 export type HoldHandler = (delta: HoldDelta) => void
+export type HoldOptions = { preventDefault?: boolean }
 
-export const useTouch = (elementRef: Ref<HTMLElement | undefined>) => {
+export const useTouch = (
+  elementRef: TouchRef,
+  options: TouchOptions = {
+    hold: { preventDefault: true },
+  },
+) => {
   const handlers = reactive({
     swipe: [] as SwipeHandler[],
     hold: [] as HoldHandler[],
@@ -24,6 +35,10 @@ export const useTouch = (elementRef: Ref<HTMLElement | undefined>) => {
   }
 
   const onTouchMove = (e: TouchEvent) => {
+    if (options.hold.preventDefault) {
+      e.preventDefault()
+    }
+
     if (!e.touches.length) {
       return
     }
