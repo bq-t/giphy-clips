@@ -36,7 +36,10 @@ export const useMockApi = <T extends Video | Video[]>(
     return shuffleMock<Video>(mockApiData as Video[], {
       min: count,
       max: count,
-    })
+    }).map(clip => ({
+      ...clip,
+      comments: shuffleMock<CommentData>(mockComments as CommentData[])
+    }))
   }
 
   const clipCallback = (): Video => {

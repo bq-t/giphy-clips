@@ -1,18 +1,21 @@
 <template>
-  <div class="video-player-footer">
-    <h1
-      v-if="title"
-      class="video-player-footer__title"
-    >
-      {{ title }}
-    </h1>
+  <footer class="video-player-footer">
+    <h4 class="video-player-footer__username">
+      {{ username || 'Loading..' }}
+    </h4>
+    <h4 class="video-player-footer__title">
+      {{ title || 'Loading..' }}
+    </h4>
     <gc-progressbar :model-value="progress" />
-  </div>
+  </footer>
 </template>
 
 <script lang="ts">
-interface VideoPlayerFooterProps {
-  title: string,
+import type { Video } from '@/models/video'
+
+export interface VideoPlayerFooterProps {
+  username?: Video['username'],
+  title?: Video['title'],
   progress?: number,
 }
 </script>

@@ -10,7 +10,7 @@ export const useScroll = (elementRef: Ref<HTMLElement | undefined>) => {
     if (!handlers.value.length) {
       return
     }
-    e.preventDefault()
+    //e.preventDefault()
 
     const scrollDeltaX = e.deltaX
     const scrollDeltaY = e.deltaY

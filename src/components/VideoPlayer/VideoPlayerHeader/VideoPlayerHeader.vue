@@ -1,20 +1,23 @@
 <template>
-  <div class="video-player-header">
+  <header class="video-player-header">
     <gc-volume-input
-      v-model="modelValue"
+      v-model="volumeModel"
       :expanded="isTablet"
     />
-  </div>
+  </header>
 </template>
 
 <script lang="ts">
-type VideoPlayerHeaderModel = number
+export type VideoPlayerHeaderVolumeModel = number
+export interface VideoPlayerHeaderProps {
+  volume?: VideoPlayerHeaderVolumeModel,
+}
 </script>
 
 <script lang="ts" setup>
 import { useDevice } from '@/composables'
 
-const modelValue = defineModel<VideoPlayerHeaderModel>({
+const volumeModel = defineModel<VideoPlayerHeaderVolumeModel>('volume', {
   default: 15,
 })
 

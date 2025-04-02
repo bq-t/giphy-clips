@@ -2,69 +2,83 @@
   <div
     ref="displayRef"
     class="video-display"
+    :class="computedClass"
     :style="computedStyle"
   >
     <video-player
       class="video-display__player"
       :id="id"
+      :title="title"
+      :username="username"
+      :url="url"
       :src="src"
       :lazy-src="lazySrc"
-      :title="title"
-      :rounded="!isMobile"
-      autoplay
+      :paused="paused || expanded && isMobile"
+      @click:comment="expandDisplay"
     />
-    <div class="video-display__data">
+    <div
+      v-show="expanded || isMobile"
+      class="video-display__data"
+    >
       <video-display-header
         :title="title"
         :username="username"
       />
-      <div class="video-display__tags">
-        <gc-badge
-          v-for="(tag, tagIndex) in tags"
-          :key="tagIndex"
-        >
-          {{ tag }}
-        </gc-badge>
-      </div>
+      <video-display-tags
+        v-if="tags.length"
+        :items="tags"
+      />
       <video-display-comments :items="comments" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import type { VideoDisplayCommentsProps } from '@/components/VideoDisplay/VideoDisplayComments/VideoDisplayComments.vue'
 import type { VideoDisplayHeaderProps } from '@/components/VideoDisplay/VideoDisplayHeader/VideoDisplayHeader.vue'
+import type { VideoDisplayTagsProps } from '@/components/VideoDisplay/VideoDisplayTags/VideoDisplayTags.vue'
 import type { VideoPlayerProps } from '@/components/VideoPlayer/VideoPlayer.vue'
 import type { SwipeDirection, HoldDelta } from '@/composables'
-import type { Video } from '@/models/video'
 
-interface VideoDisplayProps extends VideoDisplayHeaderProps {
-  id?: Video['id'],
+
+export interface VideoDisplayProps extends VideoDisplayHeaderProps {
+  id?: VideoPlayerProps['id'],
+  url?: VideoPlayerProps['url'],
   src?: VideoPlayerProps['src'],
   lazySrc?: VideoPlayerProps['lazySrc'],
-  comments?: Video['comments'],
-  tags?: Video['tags'],
+  tags?: VideoDisplayTagsProps['items'],
+  comments?: VideoDisplayCommentsProps['items'],
+  paused?: boolean,
+  expanded?: boolean,
+  // @todo other props
 }
 </script>
 
 <script lang="ts" setup>
-import VideoDisplayHeader from '@/components/VideoDisplay/VideoDisplayHeader/VideoDisplayHeader.vue'
 import VideoDisplayComments from '@/components/VideoDisplay/VideoDisplayComments/VideoDisplayComments.vue'
+import VideoDisplayHeader from '@/components/VideoDisplay/VideoDisplayHeader/VideoDisplayHeader.vue'
+import VideoDisplayTags from '@/components/VideoDisplay/VideoDisplayTags/VideoDisplayTags.vue'
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useDevice, useTouch } from '@/composables'
+import { useTouch, useDevice } from '@/composables'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-withDefaults(defineProps<VideoDisplayProps>(), {
-  username: 'Loading..',
-  title: 'Loading..',
+const props = withDefaults(defineProps<VideoDisplayProps>(), {
+  id: '',
+  url: '',
   src: '',
   lazySrc: '',
   tags: () => ([]),
   comments: () => ([]),
+  paused: true,
+  expanded: false,
 })
 
-const { isMobile } = useDevice()
+const emit = defineEmits<{
+  expand: [void],
+}>()
 
 onMounted(() => {
+  computeOffset()
   window.addEventListener('resize', computeOffset)
 })
 
@@ -72,29 +86,40 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', computeOffset)
 })
 
-const displaySwiped = ref(false)
-const displaySwipeOffset = ref(0)
-const displayTransformOffset = ref(0)
+watch(() => props.expanded, () => {
+  if (!isMobile.value) {
+    return
+  }
+  computeOffset()
+})
+
+const { isMobile } = useDevice()
 
 const displayRef = ref<HTMLElement>()
 const { onSwipe, onHold } = useTouch(displayRef, {
-  hold: { preventDefault: false },
+  hold: {
+    preventDefault: false,
+    limit: 300,
+  },
 })
 
+const displaySwipeOffset = ref(0)
+const displayTransformOffset = ref(0)
 onSwipe((direction: SwipeDirection) => {
-  if (!['left', 'right'].includes(direction)) {
+  if (
+    !['left', 'right'].includes(direction)
+    || direction === 'right' && !props.expanded
+    || direction === 'left' && props.expanded
+  ) {
     return
   }
-  displaySwiped.value = direction === 'left'
-  computeOffset()
+  expandDisplay()
 })
 
 onHold((delta: HoldDelta) => {
   if (
-    displaySwiped.value && delta.x < 0
-    || !displaySwiped.value && delta.x > 0
-    || Math.abs(delta.x) <= Math.abs(delta.y)
-    || Math.abs(delta.x) >= 300
+    props.expanded && delta.x < 0
+    || !props.expanded && delta.x > 0
     || !isMobile.value
   ) {
     return
@@ -109,14 +134,18 @@ const computedStyle = computed(() => {
   }
 })
 
+const computedClass = computed(() => props.expanded ? 'video-display_expanded' : null)
+
 const computeOffset = () => {
-  if (!isMobile.value || !displayRef?.value) {
+  if (!isMobile.value || !displayRef.value) {
     return
   }
   displaySwipeOffset.value = 0
-  displayTransformOffset.value = displaySwiped.value
+  displayTransformOffset.value = props.expanded
     ? -(displayRef.value.clientWidth / 2) : 0
 }
+
+const expandDisplay = () => emit('expand')
 </script>
 
 <style lang="scss" src="./VideoDisplay.scss">

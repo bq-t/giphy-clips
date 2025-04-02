@@ -5,10 +5,13 @@
       :id="clipData.id"
       :title="clipData.title"
       :username="clipData.username"
+      :comments="clipData.comments"
+      :url="clipData.url"
       :src="clipData.video?.assets?.source?.url"
       :lazy-src="clipData.images?.downsized?.url"
       :tags="clipData.tags"
-      :comments="clipData.comments"
+      :expanded="clipExpanded"
+      @expand="clipExpanded = !clipExpanded"
     />
   </div>
 </template>
@@ -26,6 +29,7 @@ import { useClipsStore } from '@/stores'
 const { getClip } = useClipsStore()
 
 const clipData = ref<Video>({} as Video)
+const clipExpanded = ref(true)
 
 onMounted(async () => {
   const currentRoute = useRoute()

@@ -1,31 +1,13 @@
 .video-player-source {
-  // Basic
   @apply relative h-full;
 
   &__base {
     @apply relative z-10;
-    @apply h-full w-full object-contain;
+    @apply size-full object-contain;
   }
 
   &__lazy {
-    @apply absolute z-0;
-    @apply h-full w-full top-0 object-cover blur-sm;
-  }
-
-  &__overlay {
-    @apply absolute h-full w-full z-20;
-
-    &-pause {
-      @apply absolute top-[calc(50%-3rem)] left-[calc(50%-3rem)] drop-shadow-md;
-    }
-
-    &-loader {
-      @apply relative z-30;
-      @apply w-full h-full bg-black;
-
-      &-skeleton {
-        @apply animate-pulse bg-dark-gray w-full h-full;
-      }
-    }
+    @apply absolute top-0 z-0;
+    @apply size-full object-cover blur-sm;
   }
 }

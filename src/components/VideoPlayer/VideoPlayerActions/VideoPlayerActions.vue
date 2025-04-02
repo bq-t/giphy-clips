@@ -6,6 +6,11 @@
       @click="onFavorite"
     />
     <gc-button
+      size="lg"
+      icon="mark-unread-chat-alt-outline"
+      @click="onComment"
+    />
+    <gc-button
       icon="open-in-new"
       color="primary"
       size="lg"
@@ -27,26 +32,33 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useClipsStore } from '@/stores'
 
-const props = withDefaults(defineProps<VideoPlayerActionsProps>(), {
-  id: '',
-})
+const props = defineProps<VideoPlayerActionsProps>()
 
-const emit = defineEmits([
-  'click:favorite',
-  'click:explore',
-])
+const emit = defineEmits<{
+  'click:comment': [void],
+  'click:explore': [void],
+}>()
 
 const clipsStore = useClipsStore()
 const { favorites } = storeToRefs(clipsStore)
 const { switchFavorite } = clipsStore
 
-const computedFavoriteIcon = computed(() => favorites.value.includes(props.id) ? 'favorite' : 'favorite-outline')
+const computedFavoriteIcon = computed(() => {
+  if (!props.id) {
+    return 'favorite-outline'
+  }
+  return favorites.value.includes(props.id)
+    ? 'favorite' : 'favorite-outline'
+})
 
-const onExplore = () => emit('click:explore')
 const onFavorite = () => {
+  if (!props.id) {
+    return
+  }
   switchFavorite(props.id)
-  emit('click:favorite')
 }
+const onComment = () => emit('click:comment')
+const onExplore = () => emit('click:explore')
 </script>
 
 <style lang="scss" src="./VideoPlayerActions.scss">

@@ -1,29 +1,36 @@
 .video-player {
-  @apply relative h-full overflow-hidden cursor-pointer;
-  @apply sm:aspect-[9/16] sm:w-max;
+  @apply relative h-full overflow-hidden;
 
-  &-header {
-    @apply absolute top-0 z-30;
+  @apply sm:aspect-[9/16] sm:w-max sm:rounded-[1.25rem];
+
+  &__overlay {
+    @apply absolute size-full cursor-pointer z-20;
+
+    &-pause {
+      @apply absolute top-[calc(50%-3rem)] left-[calc(50%-3rem)] drop-shadow-md;
+    }
+
+    &-loader {
+      @apply relative bg-black size-full cursor-wait z-40;
+
+      &-skeleton {
+        @apply size-full animate-pulse bg-dark-gray;
+      }
+    }
   }
 
-  &-source {
-    @apply relative mx-auto;
-    @apply sm:m-0;
+  &-header {
+    @apply absolute top-0;
   }
 
   &-actions {
-    @apply absolute z-30;
+    @apply absolute;
 
     @apply bottom-5 right-2.5;
-    @apply sm:top-[calc(50%-3.125rem)] sm:right-4;
+    @apply sm:top-[calc(50%-5rem)] sm:right-4;
   }
 
   &-footer {
-    @apply absolute bottom-0 z-30;
-  }
-
-  // Modifiers
-  &_rounded {
-    @apply rounded-[1.25rem];
+    @apply absolute bottom-0;
   }
 }

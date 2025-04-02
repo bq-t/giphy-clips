@@ -1,8 +1,8 @@
 <template>
   <div class="video-display-comments">
-    <h3 class="video-display-comments__header">
+    <h4 class="video-display-comments__heading">
       Comments ({{ items.length }})
-    </h3>
+    </h4>
     <ul class="video-display-comments__list">
       <video-display-comments-item
         v-for="(item, itemIndex) in items"
@@ -16,17 +16,15 @@
 <script lang="ts">
 import type { VideoDisplayCommentsItemProps } from '@/components/VideoDisplay/VideoDisplayComments/VideoDisplayCommentsItem/VideoDisplayCommentsItem.vue'
 
-interface VideoDisplayCommentsProps {
-  items?: VideoDisplayCommentsItemProps[],
+export interface VideoDisplayCommentsProps {
+  items: VideoDisplayCommentsItemProps[],
 }
 </script>
 
 <script lang="ts" setup>
 import VideoDisplayCommentsItem from '@/components/VideoDisplay/VideoDisplayComments/VideoDisplayCommentsItem/VideoDisplayCommentsItem.vue'
 
-withDefaults(defineProps<VideoDisplayCommentsProps>(), {
-  items: () => ([]),
-})
+defineProps<VideoDisplayCommentsProps>()
 </script>
 
 <style lang="scss" src="./VideoDisplayComments.scss">

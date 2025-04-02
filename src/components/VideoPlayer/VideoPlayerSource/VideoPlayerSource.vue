@@ -1,50 +1,31 @@
 <template>
   <div class="video-player-source">
-    <div
-      class="video-player-source__overlay"
-      @click="switchState"
-    >
-      <gc-icon
-        v-if="videoPaused"
-        class="video-player-source__overlay-pause"
-        name="play-arrow"
-        size="6rem"
-      />
-      <div
-        v-if="videoLoading"
-        class="video-player-source__overlay-loader"
-      >
-        <div class="video-player-source__overlay-loader-skeleton" />
-      </div>
-    </div>
-    <img
-      class="video-player-source__lazy"
-      :src="lazySource"
-    />
     <video
-      ref="videoRef"
+      ref="videoBaseRef"
       class="video-player-source__base"
       crossorigin="anonymous"
-      :src="source"
-      :muted="isMuted"
-      :autoplay="autoplay"
+      :src="src"
+      :muted="computedMuted"
       playsinline
       loop
-      @pause="videoPaused = true"
-      @play="videoPaused = false"
-      @loadstart="videoLoading = true"
-      @canplaythrough="onCanPlay"
+      @play="onPlay"
+      @pause="onPause"
+      @loadstart="onLoading"
+      @canplaythrough="onLoaded"
+    />
+    <img
+      class="video-player-source__lazy"
+      :src="lazySrc"
     />
   </div>
 </template>
 
 <script lang="ts">
-interface VideoPlayerSourceProps {
-  source: string,
-  lazySource: string,
-  autoplay?: boolean,
-  muted?: boolean,
-  paused?: boolean,
+import type { Video } from '@/models/video'
+
+export interface VideoPlayerSourceProps {
+  src: Video['video']['assets']['source']['url'],
+  lazySrc: Video['images']['downsized']['url'],
   volume?: number,
 }
 </script>
@@ -53,77 +34,63 @@ interface VideoPlayerSourceProps {
 import { computed, ref, onBeforeUnmount, onMounted, watch } from 'vue'
 
 const props = withDefaults(defineProps<VideoPlayerSourceProps>(), {
-  autoplay: false,
-  muted: false,
-  paused: false,
   volume: 15,
 })
 
-const videoRef = ref()
-const videoDuration = ref(1)
-const videoTimestamp = ref(0)
-const videoVolume = ref(props.volume)
-const videoPaused = ref(!props.autoplay)
-const videoLoading = ref(true)
+const emit = defineEmits<{
+  play: [void],
+  pause: [void],
+  changeDuration: [duration: number],
+  changeTime: [duration: number],
+  loading: [state: boolean],
+}>()
 
-// Listeners
-const updateTime = () => {
-  videoDuration.value = videoRef.value.duration
-  videoTimestamp.value = videoRef.value.currentTime
+const videoBaseRef = ref<HTMLVideoElement>()
+
+const setVolume = (volume: number) => {
+  if (!videoBaseRef?.value) {
+    return
+  }
+  videoBaseRef.value.volume = (volume / 100)
 }
 
 onMounted(() => {
-  updateVolume(videoVolume.value)
-  videoRef.value.addEventListener('timeupdate', updateTime)
+  setVolume(props.volume)
+  videoBaseRef.value?.addEventListener('timeupdate', onTimeUpdate)
 })
 
 onBeforeUnmount(() => {
-  videoRef.value.removeEventListener('timeupdate', updateTime)
+  videoBaseRef.value?.removeEventListener('timeupdate', onTimeUpdate)
 })
 
-watch(() => props.volume, updateVolume)
-watch(() => props.paused, (val) => val ? pauseVideo() : playVideo())
+watch(() => props.volume, setVolume)
 
-const isMuted = computed(() => props.volume <= 0 || props.muted)
+const computedMuted = computed(() => props.volume === 0)
 
-function updateVolume(value: number) {
-  if (!videoRef.value) {
+const onTimeUpdate = () => {
+  if (!videoBaseRef?.value) {
     return
   }
-  videoRef.value.volume = (value / 100)
-  videoVolume.value = value
+  emit('changeDuration', Number(videoBaseRef.value.duration))
+  emit('changeTime', Number(videoBaseRef.value.currentTime))
 }
 
-function switchState() {
-  if (videoLoading.value) {
-    return
+const onPlay = () => emit('play')
+const onPause = () => emit('pause')
+const onLoading = () => emit('loading', true)
+const onLoaded = () => {
+  if (videoBaseRef.value?.paused) {
+    emit('pause')
   }
-  videoPaused.value
-    ? playVideo() : pauseVideo()
+  emit('loading', false)
 }
 
-function playVideo() {
-  videoRef.value.play()
-}
-
-function pauseVideo() {
-  videoRef.value.pause()
-}
-
-function onCanPlay() {
-  if (!videoRef?.value) {
-    return
-  }
-  videoLoading.value = false
-  videoPaused.value = videoRef.value.paused
-}
+const playVideo = () => videoBaseRef.value?.play()
+const pauseVideo = () => videoBaseRef.value?.pause()
 
 defineExpose({
   playVideo,
   pauseVideo,
-  isMuted,
-  videoDuration,
-  videoTimestamp,
 })
 </script>
 

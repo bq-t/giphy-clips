@@ -2,22 +2,48 @@ import { onBeforeUnmount, onMounted, reactive, ref, type Ref } from 'vue'
 
 export type TouchRef = Ref<HTMLElement | undefined>
 export type TouchOptions = {
-  hold: { preventDefault?: boolean },
+  swipe?: SwipeOptions,
+  hold?: HoldOptions,
 }
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down'
 export type SwipeHandler = (direction: SwipeDirection) => void
+export type SwipeOptions = {
+  threshold?: number,
+}
 
 export type HoldDelta = { x: number, y: number }
 export type HoldHandler = (delta: HoldDelta) => void
-export type HoldOptions = { preventDefault?: boolean }
+export type HoldOptions = {
+  preventDefault?: boolean,
+  limit?: number,
+  threshold?: number,
+}
+
+const DEFAULT_SWIPE_OPTIONS: SwipeOptions = {
+  threshold: 10,
+}
+
+const DEFAULT_HOLD_OPTIONS: HoldOptions = {
+  preventDefault: true,
+  threshold: 10,
+}
 
 export const useTouch = (
   elementRef: TouchRef,
-  options: TouchOptions = {
-    hold: { preventDefault: true },
-  },
+  opts: TouchOptions = {},
 ) => {
+  const options: TouchOptions = {
+    swipe: {
+      ...DEFAULT_SWIPE_OPTIONS,
+      ...(opts.swipe || {})
+    },
+    hold: {
+      ...DEFAULT_HOLD_OPTIONS,
+      ...(opts.hold || {}),
+    },
+  } as TouchOptions
+
   const handlers = reactive({
     swipe: [] as SwipeHandler[],
     hold: [] as HoldHandler[],
@@ -26,31 +52,55 @@ export const useTouch = (
   const touchStartX = ref(0)
   const touchStartY = ref(0)
 
+  const touchDirection = ref<'horizontal' | 'vertical' | null>(null)
+
   const onTouchStart = (e: TouchEvent) => {
     if (!e.touches.length) {
       return
     }
+    touchDirection.value = null
     touchStartX.value = e.touches[0].clientX
     touchStartY.value = e.touches[0].clientY
   }
 
   const onTouchMove = (e: TouchEvent) => {
-    if (options.hold.preventDefault) {
+    if (options.hold?.preventDefault) {
       e.preventDefault()
     }
 
     if (!e.touches.length) {
       return
     }
+
     const touchMoveX = e.changedTouches[0].clientX
     const touchMoveY = e.changedTouches[0].clientY
 
     const touchMoveDeltaX = touchMoveX - touchStartX.value
     const touchMoveDeltaY = touchMoveY - touchStartY.value
 
+    const touchMoveDeltaXAbs = Math.abs(touchMoveDeltaX)
+    const touchMoveDeltaYAbs = Math.abs(touchMoveDeltaY)
+
+    if (
+      !touchDirection.value
+      && (touchMoveDeltaXAbs > (options.hold?.threshold ?? 0) || touchMoveDeltaYAbs > (options.hold?.threshold ?? 0))
+    ) {
+      touchDirection.value = touchMoveDeltaXAbs > touchMoveDeltaYAbs
+        ? 'horizontal'
+        : 'vertical'
+    }
+
+    if (
+      options.hold?.limit
+      && (touchDirection.value === 'horizontal' && touchMoveDeltaXAbs > options.hold.limit
+      || touchDirection.value === 'vertical' && touchMoveDeltaYAbs > options.hold.limit)
+    ) {
+      return
+    }
+
     handlers.hold.forEach(handler => handler({
-      x: touchMoveDeltaX,
-      y: touchMoveDeltaY,
+      x: touchDirection.value === 'vertical' ? 0 : touchMoveDeltaX,
+      y: touchDirection.value === 'horizontal' ? 0 :touchMoveDeltaY,
     }))
   }
 
@@ -68,13 +118,13 @@ export const useTouch = (
     const touchEndDeltaYAbs = Math.abs(touchEndDeltaY)
 
     let direction: SwipeDirection
-    if (touchEndDeltaYAbs > touchEndDeltaXAbs) {
-      if (touchEndDeltaYAbs <= 30) {
+    if (touchEndDeltaYAbs > touchEndDeltaXAbs && touchDirection.value === 'vertical') {
+      if (touchEndDeltaYAbs <= (options.swipe?.threshold ?? 0)) {
         return
       }
       direction = touchEndDeltaY > 0 ? 'down' : 'up'
     } else {
-      if (touchEndDeltaXAbs <= 30) {
+      if (touchEndDeltaXAbs <= (options.swipe?.threshold ?? 0)) {
         return
       }
       direction = touchEndDeltaX > 0 ? 'right' : 'left'

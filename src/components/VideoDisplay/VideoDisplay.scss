@@ -1,9 +1,9 @@
 .video-display {
   // Basic
-  @apply flex bg-dark-gray transition-transform ease-out duration-300;
+  @apply flex bg-dark-gray h-full w-max transition-transform ease-out duration-300;
 
   @apply overflow-x-visible;
-  @apply sm:aspect-square sm:rounded-[1.25rem] sm:overflow-x-hidden;
+  @apply sm:rounded-[1.25rem] sm:overflow-x-hidden;
 
   &__player {
     // Basic
@@ -14,14 +14,15 @@
   }
 
   &__data {
-    @apply flex flex-col gap-y-5 p-5 overflow-hidden;
-
     // Basic
+    @apply flex flex-col gap-y-5 p-5 overflow-hidden transition-all;
+
     @apply w-[100vw];
-    @apply sm:w-max;
+    @apply sm:w-full;
   }
 
-  &__tags {
-    @apply flex gap-2.5 flex-wrap max-h-40 overflow-auto;
+  // Modifiers
+  &_expanded {
+    @apply sm:aspect-square;
   }
 }

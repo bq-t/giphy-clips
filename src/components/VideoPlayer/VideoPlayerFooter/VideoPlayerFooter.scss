@@ -1,7 +1,11 @@
 .video-player-footer {
-  @apply w-full;
+  @apply font-jost font-medium w-full;
+
+  &__username {
+    @apply text-lg ml-2.5;
+  }
 
   &__title {
-    @apply font-jost font-medium ml-2.5 mb-2.5;
+    @apply text-base mt-1 mb-2.5 ml-2.5;
   }
 }

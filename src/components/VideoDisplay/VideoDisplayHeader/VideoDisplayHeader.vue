@@ -1,12 +1,12 @@
 <template>
   <header class="video-display-header">
-    <h2 class="video-display-header__author">
-      {{ username }}
-    </h2>
+    <h3 class="video-display-header__username">
+      {{ username || 'Loading..' }}
+    </h3>
     <span class="video-display-header__dot" />
-    <h1 class="video-display-header__title">
-      {{ title }}
-    </h1>
+    <h2 class="video-display-header__title">
+      {{ title || 'Loading..' }}
+    </h2>
   </header>
 </template>
 
@@ -14,16 +14,13 @@
 import type { Video } from '@/models/video'
 
 export interface VideoDisplayHeaderProps {
-  username?: Video['username'],
   title?: Video['title'],
+  username?: Video['username'],
 }
 </script>
 
 <script lang="ts" setup>
-withDefaults(defineProps<VideoDisplayHeaderProps>(), {
-  username: 'Loading..',
-  title: 'Loading..',
-})
+defineProps<VideoDisplayHeaderProps>()
 </script>
 
 <style lang="scss" src="./VideoDisplayHeader.scss">

@@ -27,16 +27,18 @@
         :data-item-active="itemIndex === modelValue"
         class="video-slider__item"
       >
-        <video-player
+        <video-display
           :id="item.id"
           :title="item.title"
+          :username="item.username"
+          :comments="item.comments"
+          :url="item.url"
           :src="item.video.assets.source.url"
           :lazy-src="item.images.downsized.url"
-          :autoplay="itemIndex === modelValue"
-          :muted="itemIndex !== modelValue"
+          :tags="item.tags"
+          :expanded="sliderExpanded"
           :paused="itemIndex !== modelValue"
-          :rounded="!isMobile"
-          @click:explore="() => onExplore(item.url)"
+          @expand="expandDisplay"
         />
       </div>
     </div>
@@ -58,10 +60,10 @@ interface VideoSliderProps {
 </script>
 
 <script lang="ts" setup>
-import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue'
+import VideoDisplay from '@/components/VideoDisplay/VideoDisplay.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDevice, useTouch, useScroll, useThrottle } from '@/composables'
+import { useTouch, useScroll, useThrottle, useDevice } from '@/composables'
 import { useVideoSliderStore } from '@/stores'
 
 const props = withDefaults(defineProps<VideoSliderProps>(), {
@@ -82,6 +84,8 @@ watch(() => modelValue.value, (val, oldVal) => {
   }
   computeOffset()
 })
+
+const { isMobile } = useDevice()
 
 const sliderSwipeOffset = ref(0)
 const computedStyle = computed(() => {
@@ -115,14 +119,16 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', computeOffset)
 })
 
-const { isMobile } = useDevice()
-
 const sliderRef = ref<HTMLElement>()
-const { onSwipe, onHold } = useTouch(sliderRef)
+const { onSwipe, onHold } = useTouch(sliderRef, {
+  hold: {
+    limit: 300,
+  },
+})
 const { onScroll } = useScroll(sliderRef)
 
 const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = false) => {
-  if (!['up', 'down'].includes(direction)) {
+  if (!['up', 'down'].includes(direction) || sliderExpanded.value && isMobile.value) {
     return
   }
   const swipeDirection = reverse ? 'down' : 'up'
@@ -140,12 +146,12 @@ onSwipe((direction: SwipeDirection) => {
 })
 
 onHold((delta: HoldDelta) => {
-  if (modelValue.value === 0 && delta.y > 0) {
-    loaderTransformRotation.value = delta.y * -1
+  if (sliderExpanded.value && isMobile.value) {
+    return
   }
 
-  if (Math.abs(delta.y) >= 300) {
-    return
+  if (modelValue.value === 0 && delta.y > 0) {
+    loaderTransformRotation.value = delta.y * -1
   }
   sliderSwipeOffset.value = delta.y
 })
@@ -163,7 +169,7 @@ const changeSlide = (toTop: boolean = false) => {
 }
 
 const videoSliderStore = useVideoSliderStore()
-const { offset: sliderTransformOffset } = storeToRefs(videoSliderStore)
+const { offset: sliderTransformOffset, expanded: sliderExpanded } = storeToRefs(videoSliderStore)
 const computeOffset = () => {
   if (!sliderRef?.value) {
     return
@@ -181,8 +187,8 @@ const computeOffset = () => {
   videoSliderStore.setOffset(resultOffset)
 }
 
-const onExplore = (url: string) => {
-  window.open(url, '_blank')
+const expandDisplay = () => {
+  videoSliderStore.switchExpanded()
 }
 </script>
 
