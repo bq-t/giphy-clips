@@ -136,6 +136,10 @@ const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = fal
 }
 
 onSwipe((direction: SwipeDirection) => {
+  if (sliderExpanded.value && isMobile.value) {
+    return
+  }
+
   sliderSwipeOffset.value = 0
   loaderTransformRotation.value = 0
   if (modelValue.value === 0 && direction === 'down') {
