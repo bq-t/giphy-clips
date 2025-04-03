@@ -85,7 +85,7 @@ watch(() => modelValue.value, (val, oldVal) => {
   computeOffset()
 })
 
-const { isMobile } = useDevice()
+const { isTablet } = useDevice()
 
 const sliderSwipeOffset = ref(0)
 const computedStyle = computed(() => {
@@ -128,7 +128,7 @@ const { onSwipe, onMove, onDrop } = useTouch(sliderRef, {
 const { onScroll } = useScroll(sliderRef)
 
 const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = false) => {
-  if (!['up', 'down'].includes(direction) || sliderExpanded.value && isMobile.value) {
+  if (!['up', 'down'].includes(direction) || sliderExpanded.value && isTablet.value) {
     return
   }
   const swipeDirection = reverse ? 'down' : 'up'
@@ -136,7 +136,7 @@ const swipeHandler = (direction: SwipeDirection | ScrollDirection, reverse = fal
 }
 
 onSwipe((direction: SwipeDirection) => {
-  if (sliderExpanded.value && isMobile.value) {
+  if (sliderExpanded.value && isTablet.value) {
     return
   }
 
@@ -150,7 +150,7 @@ onSwipe((direction: SwipeDirection) => {
 })
 
 onMove((delta: MoveDelta) => {
-  if (sliderExpanded.value && isMobile.value) {
+  if (sliderExpanded.value && isTablet.value) {
     return
   }
 

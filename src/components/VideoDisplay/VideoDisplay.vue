@@ -13,11 +13,11 @@
       :url="url"
       :src="src"
       :lazy-src="lazySrc"
-      :preview="preview || expanded && isMobile"
+      :preview="preview || expanded && isTablet"
       @click:comment="expandDisplay"
     />
     <div
-      v-show="expanded || isMobile"
+      v-show="expanded || isTablet"
       class="video-display__data"
     >
       <video-display-header
@@ -89,13 +89,13 @@ onBeforeUnmount(() => {
 })
 
 watch(() => props.expanded, () => {
-  if (!isMobile.value) {
+  if (!isTablet.value) {
     return
   }
   computeOffset()
 })
 
-const { isMobile } = useDevice()
+const { isTablet } = useDevice()
 
 const displayRef = ref<HTMLElement>()
 const { onSwipe, onMove, onDrop } = useTouch(displayRef, {
@@ -122,7 +122,7 @@ onMove((delta: MoveDelta) => {
   if (
     props.expanded && delta.x < 0
     || !props.expanded && delta.x > 0
-    || !isMobile.value
+    || !isTablet.value
   ) {
     return
   }
@@ -141,7 +141,7 @@ const computedStyle = computed(() => {
 const computedClass = computed(() => props.expanded ? 'video-display_expanded' : null)
 
 const computeOffset = () => {
-  if (!isMobile.value || !displayRef.value) {
+  if (!isTablet.value || !displayRef.value) {
     return
   }
   displaySwipeOffset.value = 0

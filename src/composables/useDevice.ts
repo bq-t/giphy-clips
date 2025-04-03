@@ -12,9 +12,9 @@ export const useDevice = () => {
   onMounted(() => window.addEventListener('resize', widthWatcher))
   onUnmounted(() => window.removeEventListener('resize', widthWatcher))
 
-  const isMobile = computed(() => windowWidth.value <= DEVICE_BREAKPOINTS.mobile)
+  const isMobile = computed(() => windowWidth.value < DEVICE_BREAKPOINTS.mobile)
 
-  const isTablet = computed(() => windowWidth.value <= DEVICE_BREAKPOINTS.tablet)
+  const isTablet = computed(() => windowWidth.value < DEVICE_BREAKPOINTS.tablet)
 
   return {
     isMobile,

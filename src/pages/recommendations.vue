@@ -9,7 +9,7 @@
       @update:model-value="setRecommendation"
     />
     <div
-      v-if="!isMobile"
+      v-if="!isTablet"
       class="recommendations-page__controls"
     >
       <gc-button
@@ -36,7 +36,7 @@ import { storeToRefs } from 'pinia'
 import { useDevice } from '@/composables'
 import { useClipsStore } from '@/stores/clips'
 
-const { isMobile } = useDevice()
+const { isTablet } = useDevice()
 
 const clipsStore = useClipsStore()
 const { getRecommendations, setRecommendation, flushRecommendations } = clipsStore
@@ -96,16 +96,14 @@ const onRefresh = (state: boolean) => {
   // Basic
   @apply flex items-center w-full;
 
-  @apply sm:ml-6 sm:py-2.5;
-  @apply lg:ml-0;
+  @apply lg:py-2.5;
 
   &__slider {
     @apply mx-auto;
   }
 
   &__controls {
-    @apply mr-6 w-[2.5rem];
-    @apply lg:ml-[12.5rem] lg:mr-12;
+    @apply mx-6 mr-12 w-[2.5rem];
 
     > :first-child {
       @apply rotate-90 mb-5;

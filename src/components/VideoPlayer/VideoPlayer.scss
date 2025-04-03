@@ -1,7 +1,8 @@
 .video-player {
+  // Basic
   @apply relative h-full overflow-hidden;
 
-  @apply sm:aspect-[9/16] sm:w-max sm:rounded-[1.25rem];
+  @apply lg:aspect-[9/16] lg:w-max lg:rounded-[1.25rem];
 
   &__overlay {
     @apply absolute size-full cursor-pointer z-20;
@@ -19,7 +20,7 @@
     @apply absolute;
 
     @apply bottom-5 right-2.5;
-    @apply sm:top-[calc(50%-5rem)] sm:right-4;
+    @apply lg:top-[calc(50%-5rem)] lg:right-4;
   }
 
   &-footer {

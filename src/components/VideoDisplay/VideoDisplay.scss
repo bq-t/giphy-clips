@@ -3,14 +3,15 @@
   @apply flex bg-dark-gray h-full transition-transform ease-out duration-300;
 
   @apply overflow-x-visible w-max;
-  @apply sm:rounded-[1.25rem] sm:overflow-x-hidden sm:w-auto;
+  @apply lg:rounded-[1.25rem] lg:overflow-x-hidden lg:w-auto;
 
   &__player {
     // Basic
     @apply shrink-0;
 
     @apply w-[100vw];
-    @apply sm:w-max;
+    @apply sm:w-[calc(100vw-4rem)];
+    @apply lg:w-max;
   }
 
   &__data {
@@ -18,11 +19,12 @@
     @apply flex flex-col gap-y-5 p-5 transition-all;
 
     @apply w-[100vw];
-    @apply sm:w-full;
+    @apply sm:w-[calc(100vw-4rem)];
+    @apply lg:w-full;
   }
 
   // Modifiers
   &_expanded {
-    @apply sm:aspect-square;
+    @apply lg:aspect-square;
   }
 }

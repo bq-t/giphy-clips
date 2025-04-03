@@ -7,7 +7,7 @@
       @mouseleave="playerHeaderVisible = false"
     >
       <video-player-header
-        v-show="playerHeaderVisible && !playerLoading && !isMobile"
+        v-show="playerHeaderVisible && !playerLoading && !isTablet"
         v-model:volume="playerVolume"
       />
       <gc-icon
@@ -78,7 +78,7 @@ const emit = defineEmits<{
   'click:comment': [void],
 }>()
 
-const { isMobile } = useDevice()
+const { isTablet } = useDevice()
 
 const videoSourceRef = ref<typeof VideoPlayerSource>()
 

@@ -1,6 +1,6 @@
 .default-layout {
   // Basic
-  @apply flex text-white bg-black;
+  @apply flex text-white bg-black overflow-hidden;
 
   @apply h-[calc(100%-6rem)];
   @apply sm:h-full;
