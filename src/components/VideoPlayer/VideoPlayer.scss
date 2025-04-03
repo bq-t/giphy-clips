@@ -9,14 +9,6 @@
     &-pause {
       @apply absolute top-[calc(50%-3rem)] left-[calc(50%-3rem)] drop-shadow-md;
     }
-
-    &-loader {
-      @apply relative bg-black size-full cursor-wait z-40;
-
-      &-skeleton {
-        @apply size-full animate-pulse bg-dark-gray;
-      }
-    }
   }
 
   &-header {

@@ -37,7 +37,7 @@
           :lazy-src="item.images.downsized.url"
           :tags="item.tags"
           :expanded="sliderExpanded"
-          :paused="itemIndex !== modelValue"
+          :preview="itemIndex !== modelValue"
           @expand="expandDisplay"
         />
       </div>
@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import type { Video } from '@/models/video'
-import type { ScrollDirection, SwipeDirection, HoldDelta } from '@/composables'
+import type { ScrollDirection, SwipeDirection, MoveDelta } from '@/composables'
 
 type VideoSliderModel = number
 type VideoSliderLoadingModel = boolean
@@ -120,8 +120,8 @@ onBeforeUnmount(() => {
 })
 
 const sliderRef = ref<HTMLElement>()
-const { onSwipe, onHold } = useTouch(sliderRef, {
-  hold: {
+const { onSwipe, onMove, onDrop } = useTouch(sliderRef, {
+  move: {
     limit: 300,
   },
 })
@@ -145,7 +145,7 @@ onSwipe((direction: SwipeDirection) => {
   swipeHandler(direction, true)
 })
 
-onHold((delta: HoldDelta) => {
+onMove((delta: MoveDelta) => {
   if (sliderExpanded.value && isMobile.value) {
     return
   }
@@ -154,6 +154,10 @@ onHold((delta: HoldDelta) => {
     loaderTransformRotation.value = delta.y * -1
   }
   sliderSwipeOffset.value = delta.y
+})
+
+onDrop(() => {
+  sliderSwipeOffset.value = 0
 })
 
 const throttleSwipe = useThrottle(swipeHandler, 250)

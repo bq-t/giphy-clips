@@ -13,7 +13,7 @@
       :url="url"
       :src="src"
       :lazy-src="lazySrc"
-      :paused="paused || expanded && isMobile"
+      :preview="preview || expanded && isMobile"
       @click:comment="expandDisplay"
     />
     <div
@@ -38,7 +38,7 @@ import type { VideoDisplayCommentsProps } from '@/components/VideoDisplay/VideoD
 import type { VideoDisplayHeaderProps } from '@/components/VideoDisplay/VideoDisplayHeader/VideoDisplayHeader.vue'
 import type { VideoDisplayTagsProps } from '@/components/VideoDisplay/VideoDisplayTags/VideoDisplayTags.vue'
 import type { VideoPlayerProps } from '@/components/VideoPlayer/VideoPlayer.vue'
-import type { SwipeDirection, HoldDelta } from '@/composables'
+import type { SwipeDirection, MoveDelta } from '@/composables'
 
 
 export interface VideoDisplayProps extends VideoDisplayHeaderProps {
@@ -48,7 +48,7 @@ export interface VideoDisplayProps extends VideoDisplayHeaderProps {
   lazySrc?: VideoPlayerProps['lazySrc'],
   tags?: VideoDisplayTagsProps['items'],
   comments?: VideoDisplayCommentsProps['items'],
-  paused?: boolean,
+  preview?: boolean,
   expanded?: boolean,
   // @todo other props
 }
@@ -64,12 +64,14 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<VideoDisplayProps>(), {
   id: '',
+  title: '',
+  username: '',
   url: '',
   src: '',
   lazySrc: '',
   tags: () => ([]),
   comments: () => ([]),
-  paused: true,
+  preview: true,
   expanded: false,
 })
 
@@ -96,8 +98,8 @@ watch(() => props.expanded, () => {
 const { isMobile } = useDevice()
 
 const displayRef = ref<HTMLElement>()
-const { onSwipe, onHold } = useTouch(displayRef, {
-  hold: {
+const { onSwipe, onMove, onDrop } = useTouch(displayRef, {
+  move: {
     preventDefault: false,
     limit: 300,
   },
@@ -116,7 +118,7 @@ onSwipe((direction: SwipeDirection) => {
   expandDisplay()
 })
 
-onHold((delta: HoldDelta) => {
+onMove((delta: MoveDelta) => {
   if (
     props.expanded && delta.x < 0
     || !props.expanded && delta.x > 0
@@ -126,6 +128,8 @@ onHold((delta: HoldDelta) => {
   }
   displaySwipeOffset.value = delta.x
 })
+
+onDrop(() => displaySwipeOffset.value = 0)
 
 const computedStyle = computed(() => {
   const generalOffset = displayTransformOffset.value + displaySwipeOffset.value

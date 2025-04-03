@@ -11,34 +11,30 @@
         v-model:volume="playerVolume"
       />
       <gc-icon
-        v-if="playerPaused"
+        v-if="playerPaused && !playerLoading && !preview"
         class="video-player__overlay-pause"
         name="play-arrow"
         size="6rem"
         @click.stop="switchPlayerState"
-      />
-      <video-player-actions
-        :id="id"
-        @click:explore="onExplore"
-        @click:comment="onComment"
       />
       <video-player-footer
         :title="title"
         :username="username"
         :progress="computedPlayerProgress"
       />
-      <div
-        v-if="playerLoading"
-        class="video-player__overlay-loader"
-      >
-        <div class="video-player__overlay-loader-skeleton" />
-      </div>
+      <video-player-actions
+        :id="id"
+        :loading="playerLoading"
+        @click:explore="onExplore"
+        @click:comment="onComment"
+      />
     </div>
     <video-player-source
       ref="videoSourceRef"
       :src="src"
       :lazy-src="lazySrc"
       :volume="playerVolume"
+      :preview="preview"
       @play="playerPaused = false"
       @pause="playerPaused = true"
       @loading="val => playerLoading = val"
@@ -61,7 +57,7 @@ export interface VideoPlayerProps {
   username: VideoPlayerFooterProps['username'],
   src: VideoPlayerSourceProps['src'],
   lazySrc: VideoPlayerSourceProps['lazySrc'],
-  paused?: boolean,
+  preview?: boolean,
 }
 </script>
 
@@ -75,7 +71,7 @@ import { useDevice } from '@/composables'
 import { computed, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<VideoPlayerProps>(), {
-  paused: true,
+  preview: true,
 })
 
 const emit = defineEmits<{
@@ -84,17 +80,10 @@ const emit = defineEmits<{
 
 const { isMobile } = useDevice()
 
-watch(() => props.paused, (val: boolean) => {
-  if (!videoSourceRef.value) {
-    return
-  }
-  videoSourceRef.value[val ? 'pauseVideo' : 'playVideo']()
-})
-
 const videoSourceRef = ref<typeof VideoPlayerSource>()
 
 const playerHeaderVisible = ref(false)
-const playerPaused = ref(props.paused)
+const playerPaused = ref(true)
 const playerLoading = ref(true)
 
 const videoPlayerStore = useVideoPlayerStore()

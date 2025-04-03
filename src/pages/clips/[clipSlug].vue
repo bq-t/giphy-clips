@@ -11,6 +11,7 @@
       :lazy-src="clipData.images?.downsized?.url"
       :tags="clipData.tags"
       :expanded="clipExpanded"
+      :preview="false"
       @expand="clipExpanded = !clipExpanded"
     />
   </div>
@@ -24,12 +25,15 @@ import type { Video } from '@/models/video'
 import VideoDisplay from '@/components/VideoDisplay/VideoDisplay.vue'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useDevice } from '@/composables'
 import { useClipsStore } from '@/stores'
+
+const { isMobile } = useDevice()
 
 const { getClip } = useClipsStore()
 
 const clipData = ref<Video>({} as Video)
-const clipExpanded = ref(true)
+const clipExpanded = ref(!isMobile.value)
 
 onMounted(async () => {
   const currentRoute = useRoute()

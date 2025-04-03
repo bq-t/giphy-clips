@@ -4,7 +4,7 @@
       :model-value="currentRecommendation"
       class="recommendations-page__slider"
       :items="recommendations"
-      :loading="recommendationsPending"
+      :loading="recommendationsPending && !recommendations.length"
       @update:loading="onRefresh"
       @update:model-value="setRecommendation"
     />

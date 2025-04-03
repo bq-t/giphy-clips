@@ -3,17 +3,20 @@
     <gc-button
       size="lg"
       :icon="computedFavoriteIcon"
+      :loading="loading"
       @click="onFavorite"
     />
     <gc-button
       size="lg"
       icon="mark-unread-chat-alt-outline"
+      :loading="loading"
       @click="onComment"
     />
     <gc-button
       icon="open-in-new"
       color="primary"
       size="lg"
+      :loading="loading"
       @click="onExplore"
     />
   </div>
@@ -24,6 +27,7 @@ import type { Video } from '@/models/video'
 
 export interface VideoPlayerActionsProps {
   id?: Video['id'],
+  loading?: boolean,
 }
 </script>
 
@@ -32,7 +36,9 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useClipsStore } from '@/stores'
 
-const props = defineProps<VideoPlayerActionsProps>()
+const props = withDefaults(defineProps<VideoPlayerActionsProps>(), {
+  loading: false,
+})
 
 const emit = defineEmits<{
   'click:comment': [void],

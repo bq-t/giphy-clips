@@ -1,7 +1,7 @@
 .video-player-source {
   @apply relative h-full;
 
-  &__base {
+  &__base, &__preview {
     @apply relative z-10;
     @apply size-full object-contain;
   }

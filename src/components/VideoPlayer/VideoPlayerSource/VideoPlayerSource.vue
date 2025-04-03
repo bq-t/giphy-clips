@@ -1,12 +1,21 @@
 <template>
   <div class="video-player-source">
+    <img
+      v-if="preview || videoBaseLoading"
+      class="video-player-source__preview"
+      :src="lazySrc"
+    />
     <video
+      v-if="!videoPreviewVisible"
       ref="videoBaseRef"
       class="video-player-source__base"
       crossorigin="anonymous"
-      :src="src"
+      mediatype="video"
+      preload="auto"
       :muted="computedMuted"
+      :src="src"
       playsinline
+      autoplay
       loop
       @play="onPlay"
       @pause="onPause"
@@ -26,14 +35,16 @@ import type { Video } from '@/models/video'
 export interface VideoPlayerSourceProps {
   src: Video['video']['assets']['source']['url'],
   lazySrc: Video['images']['downsized']['url'],
+  preview?: boolean,
   volume?: number,
 }
 </script>
 
 <script lang="ts" setup>
-import { computed, ref, onBeforeUnmount, onMounted, watch } from 'vue'
+import { computed, ref, onBeforeUnmount, onMounted, watch, nextTick } from 'vue'
 
 const props = withDefaults(defineProps<VideoPlayerSourceProps>(), {
+  preview: true,
   volume: 15,
 })
 
@@ -46,6 +57,8 @@ const emit = defineEmits<{
 }>()
 
 const videoBaseRef = ref<HTMLVideoElement>()
+const videoPreviewVisible = ref(!props.preview)
+const videoBaseLoading = ref(true)
 
 const setVolume = (volume: number) => {
   if (!videoBaseRef?.value) {
@@ -54,16 +67,25 @@ const setVolume = (volume: number) => {
   videoBaseRef.value.volume = (volume / 100)
 }
 
-onMounted(() => {
-  setVolume(props.volume)
-  videoBaseRef.value?.addEventListener('timeupdate', onTimeUpdate)
-})
+const turnListeners = () => {
+  if (props.preview) {
+    videoBaseRef.value?.removeEventListener('timeupdate', onTimeUpdate)
+    nextTick(() => videoPreviewVisible.value = true)
+    return
+  }
+  videoPreviewVisible.value = false
+  nextTick(() => {
+    setVolume(props.volume)
+    playVideo()
+    videoBaseRef.value?.addEventListener('timeupdate', onTimeUpdate)
+  })
+}
 
-onBeforeUnmount(() => {
-  videoBaseRef.value?.removeEventListener('timeupdate', onTimeUpdate)
-})
+onMounted(() => turnListeners())
+onBeforeUnmount(() => turnListeners())
 
 watch(() => props.volume, setVolume)
+watch(() => props.preview, turnListeners)
 
 const computedMuted = computed(() => props.volume === 0)
 
@@ -77,11 +99,12 @@ const onTimeUpdate = () => {
 
 const onPlay = () => emit('play')
 const onPause = () => emit('pause')
-const onLoading = () => emit('loading', true)
+const onLoading = () => {
+  videoBaseLoading.value = true
+  emit('loading', true)
+}
 const onLoaded = () => {
-  if (videoBaseRef.value?.paused) {
-    emit('pause')
-  }
+  videoBaseLoading.value = false
   emit('loading', false)
 }
 

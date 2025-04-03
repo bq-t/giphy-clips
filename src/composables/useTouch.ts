@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, reactive, ref, type Ref } from 'vue'
 export type TouchRef = Ref<HTMLElement | undefined>
 export type TouchOptions = {
   swipe?: SwipeOptions,
-  hold?: HoldOptions,
+  move?: MoveOptions,
 }
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down'
@@ -12,19 +12,21 @@ export type SwipeOptions = {
   threshold?: number,
 }
 
-export type HoldDelta = { x: number, y: number }
-export type HoldHandler = (delta: HoldDelta) => void
-export type HoldOptions = {
+export type MoveDelta = { x: number, y: number }
+export type MoveHandler = (delta: MoveDelta) => void
+export type MoveOptions = {
   preventDefault?: boolean,
   limit?: number,
   threshold?: number,
 }
 
+export type DropHandler = () => void
+
 const DEFAULT_SWIPE_OPTIONS: SwipeOptions = {
-  threshold: 10,
+  threshold: 50,
 }
 
-const DEFAULT_HOLD_OPTIONS: HoldOptions = {
+const DEFAULT_MOVE_OPTIONS: MoveOptions = {
   preventDefault: true,
   threshold: 10,
 }
@@ -38,15 +40,16 @@ export const useTouch = (
       ...DEFAULT_SWIPE_OPTIONS,
       ...(opts.swipe || {})
     },
-    hold: {
-      ...DEFAULT_HOLD_OPTIONS,
-      ...(opts.hold || {}),
+    move: {
+      ...DEFAULT_MOVE_OPTIONS,
+      ...(opts.move || {}),
     },
   } as TouchOptions
 
   const handlers = reactive({
     swipe: [] as SwipeHandler[],
-    hold: [] as HoldHandler[],
+    move: [] as MoveHandler[],
+    drop: [] as DropHandler[],
   })
 
   const touchStartX = ref(0)
@@ -64,7 +67,7 @@ export const useTouch = (
   }
 
   const onTouchMove = (e: TouchEvent) => {
-    if (options.hold?.preventDefault) {
+    if (options.move?.preventDefault) {
       e.preventDefault()
     }
 
@@ -83,7 +86,7 @@ export const useTouch = (
 
     if (
       !touchDirection.value
-      && (touchMoveDeltaXAbs > (options.hold?.threshold ?? 0) || touchMoveDeltaYAbs > (options.hold?.threshold ?? 0))
+      && (touchMoveDeltaXAbs > (options.move?.threshold ?? 0) || touchMoveDeltaYAbs > (options.move?.threshold ?? 0))
     ) {
       touchDirection.value = touchMoveDeltaXAbs > touchMoveDeltaYAbs
         ? 'horizontal'
@@ -91,14 +94,14 @@ export const useTouch = (
     }
 
     if (
-      options.hold?.limit
-      && (touchDirection.value === 'horizontal' && touchMoveDeltaXAbs > options.hold.limit
-      || touchDirection.value === 'vertical' && touchMoveDeltaYAbs > options.hold.limit)
+      options.move?.limit
+      && (touchDirection.value === 'horizontal' && touchMoveDeltaXAbs > options.move.limit
+      || touchDirection.value === 'vertical' && touchMoveDeltaYAbs > options.move.limit)
     ) {
       return
     }
 
-    handlers.hold.forEach(handler => handler({
+    handlers.move.forEach(handler => handler({
       x: touchDirection.value === 'vertical' ? 0 : touchMoveDeltaX,
       y: touchDirection.value === 'horizontal' ? 0 :touchMoveDeltaY,
     }))
@@ -120,11 +123,13 @@ export const useTouch = (
     let direction: SwipeDirection
     if (touchEndDeltaYAbs > touchEndDeltaXAbs && touchDirection.value === 'vertical') {
       if (touchEndDeltaYAbs <= (options.swipe?.threshold ?? 0)) {
+        handlers.drop.forEach(handler => handler())
         return
       }
       direction = touchEndDeltaY > 0 ? 'down' : 'up'
     } else {
       if (touchEndDeltaXAbs <= (options.swipe?.threshold ?? 0)) {
+        handlers.drop.forEach(handler => handler())
         return
       }
       direction = touchEndDeltaX > 0 ? 'right' : 'left'
@@ -161,15 +166,23 @@ export const useTouch = (
     }
   }
 
-  const onHold = (handler: HoldHandler) => {
-    handlers.hold.push(handler)
+  const onMove = (handler: MoveHandler) => {
+    handlers.move.push(handler)
     return () => {
-      handlers.hold = handlers.hold.filter(h => h !== handler)
+      handlers.move = handlers.move.filter(h => h !== handler)
+    }
+  }
+
+  const onDrop = (handler: DropHandler) => {
+    handlers.drop.push(handler)
+    return () => {
+      handlers.drop = handlers.drop.filter(h => h !== handler)
     }
   }
 
   return {
     onSwipe,
-    onHold,
+    onMove,
+    onDrop,
   }
 }
