@@ -1,5 +1,5 @@
 .video-display-comments {
-  @apply overflow-hidden;
+  @apply flex flex-col overflow-hidden;
 
   &__heading {
     @apply font-jost text-sm mb-5;

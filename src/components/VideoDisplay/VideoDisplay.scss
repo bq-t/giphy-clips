@@ -15,7 +15,7 @@
 
   &__data {
     // Basic
-    @apply flex flex-col gap-y-5 p-5 overflow-hidden transition-all;
+    @apply flex flex-col gap-y-5 p-5 transition-all;
 
     @apply w-[100vw];
     @apply sm:w-full;
