@@ -100,7 +100,7 @@ const { isMobile } = useDevice()
 const displayRef = ref<HTMLElement>()
 const { onSwipe, onMove, onDrop } = useTouch(displayRef, {
   move: {
-    preventDefault: false,
+    preventDefault: { y: false },
     limit: 300,
   },
 })

@@ -15,7 +15,7 @@ export type SwipeOptions = {
 export type MoveDelta = { x: number, y: number }
 export type MoveHandler = (delta: MoveDelta) => void
 export type MoveOptions = {
-  preventDefault?: boolean,
+  preventDefault?: { x?: boolean, y?: boolean },
   limit?: number,
   threshold?: number,
 }
@@ -27,8 +27,11 @@ const DEFAULT_SWIPE_OPTIONS: SwipeOptions = {
 }
 
 const DEFAULT_MOVE_OPTIONS: MoveOptions = {
-  preventDefault: true,
-  threshold: 10,
+  preventDefault: {
+    x: true,
+    y: true,
+  },
+  threshold: 15,
 }
 
 export const useTouch = (
@@ -55,22 +58,18 @@ export const useTouch = (
   const touchStartX = ref(0)
   const touchStartY = ref(0)
 
-  const touchDirection = ref<'horizontal' | 'vertical' | null>(null)
+  const touchAxis = ref<'x' | 'y' | null>(null)
 
   const onTouchStart = (e: TouchEvent) => {
     if (!e.touches.length) {
       return
     }
-    touchDirection.value = null
+    touchAxis.value = null
     touchStartX.value = e.touches[0].clientX
     touchStartY.value = e.touches[0].clientY
   }
 
   const onTouchMove = (e: TouchEvent) => {
-    if (options.move?.preventDefault) {
-      e.preventDefault()
-    }
-
     if (!e.touches.length) {
       return
     }
@@ -85,25 +84,28 @@ export const useTouch = (
     const touchMoveDeltaYAbs = Math.abs(touchMoveDeltaY)
 
     if (
-      !touchDirection.value
+      !touchAxis.value
       && (touchMoveDeltaXAbs > (options.move?.threshold ?? 0) || touchMoveDeltaYAbs > (options.move?.threshold ?? 0))
     ) {
-      touchDirection.value = touchMoveDeltaXAbs > touchMoveDeltaYAbs
-        ? 'horizontal'
-        : 'vertical'
+      touchAxis.value = touchMoveDeltaXAbs > touchMoveDeltaYAbs
+        ? 'x' : 'y'
+    }
+
+    if (touchAxis.value && options.move?.preventDefault?.[touchAxis.value]) {
+      e.preventDefault()
     }
 
     if (
       options.move?.limit
-      && (touchDirection.value === 'horizontal' && touchMoveDeltaXAbs > options.move.limit
-      || touchDirection.value === 'vertical' && touchMoveDeltaYAbs > options.move.limit)
+      && (touchAxis.value === 'x' && touchMoveDeltaXAbs > options.move.limit
+      || touchAxis.value === 'y' && touchMoveDeltaYAbs > options.move.limit)
     ) {
       return
     }
 
     handlers.move.forEach(handler => handler({
-      x: touchDirection.value === 'vertical' ? 0 : touchMoveDeltaX,
-      y: touchDirection.value === 'horizontal' ? 0 :touchMoveDeltaY,
+      x: touchAxis.value === 'y' ? 0 : touchMoveDeltaX,
+      y: touchAxis.value === 'x' ? 0 :touchMoveDeltaY,
     }))
   }
 
@@ -121,7 +123,7 @@ export const useTouch = (
     const touchEndDeltaYAbs = Math.abs(touchEndDeltaY)
 
     let direction: SwipeDirection
-    if (touchEndDeltaYAbs > touchEndDeltaXAbs && touchDirection.value === 'vertical') {
+    if (touchEndDeltaYAbs > touchEndDeltaXAbs && touchAxis.value === 'y') {
       if (touchEndDeltaYAbs <= (options.swipe?.threshold ?? 0)) {
         handlers.drop.forEach(handler => handler())
         return
