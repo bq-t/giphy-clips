@@ -1,9 +1,9 @@
 .video-display {
   // Basic
-  @apply flex bg-dark-gray h-full w-max transition-transform ease-out duration-300;
+  @apply flex bg-dark-gray h-full transition-transform ease-out duration-300;
 
-  @apply overflow-x-visible;
-  @apply sm:rounded-[1.25rem] sm:overflow-x-hidden;
+  @apply overflow-x-visible w-max;
+  @apply sm:rounded-[1.25rem] sm:overflow-x-hidden sm:w-auto;
 
   &__player {
     // Basic
