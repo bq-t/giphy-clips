@@ -1,0 +1,1 @@
+import{I as s,q as a}from"./index-BdAOosat.js";const i=(r,l)=>{let t=!1,e=null;const o=()=>{e&&(clearTimeout(e),e=null,t=!1)},u=(...n)=>{t||(r(...n),t=!0,e=setTimeout(()=>{t=!1},a(l)))};return s(o),u};export{i as u};
